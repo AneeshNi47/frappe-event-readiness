@@ -1,0 +1,67 @@
+{
+ "charts": [],
+ "content": "[{\"id\":\"bzg6Xqtus_\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Event Readiness Dashboard</span>\",\"col\":12}},{\"id\":\"ap7TiOWxEm\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"All Tasks\",\"col\":4}},{\"id\":\"6YRCN9e-9Y\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Members\",\"col\":4}},{\"id\":\"AsGj9BqJFj\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Events\",\"col\":4}},{\"id\":\"4q1wz5C5NY\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Events\",\"col\":4}},{\"id\":\"XKFGB_aXnv\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Default Task Template\",\"col\":4}},{\"id\":\"fkcZnz4w9X\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Organization Sectors\",\"col\":4}}]",
+ "creation": "2025-11-29 15:08:29.928627",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "calendar",
+ "idx": 0,
+ "indicator_color": "light-blue",
+ "is_hidden": 0,
+ "label": "Event Readiness Dashboard",
+ "links": [],
+ "modified": "2025-11-29 15:47:07.215921",
+ "modified_by": "Administrator",
+ "module": "PSN Readiness Dashboard",
+ "name": "Event Readiness Dashboard",
+ "number_cards": [
+  {
+   "label": "All Tasks",
+   "number_card_name": "All Tasks"
+  },
+  {
+   "label": "Members",
+   "number_card_name": "Sector Members"
+  },
+  {
+   "label": "Total Events",
+   "number_card_name": "Total Events"
+  }
+ ],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [],
+ "sequence_id": 1.0,
+ "shortcuts": [
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Events",
+   "link_to": "Event Readiness",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Default Task Template",
+   "link_to": "Task Template",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Organization Sectors",
+   "link_to": "Sector",
+   "stats_filter": "[]",
+   "type": "DocType"
+  }
+ ],
+ "title": "Event Readiness Dashboard"
+}

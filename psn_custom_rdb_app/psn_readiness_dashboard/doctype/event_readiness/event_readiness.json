@@ -1,0 +1,111 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:{event}-{event_readiness}",
+ "creation": "2025-11-29 13:54:50.724046",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "event_name",
+  "event_description",
+  "event_readiness",
+  "total_tasks",
+  "pending_tasks",
+  "column_break_kcrb",
+  "event_date",
+  "use_default_tasks",
+  "completed_tasks",
+  "delayed_tasks",
+  "event_owner"
+ ],
+ "fields": [
+  {
+   "fieldname": "event_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Event Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "event_description",
+   "fieldtype": "Data",
+   "label": "Event Description"
+  },
+  {
+   "fieldname": "event_readiness",
+   "fieldtype": "Percent",
+   "label": "Event Readiness"
+  },
+  {
+   "fieldname": "total_tasks",
+   "fieldtype": "Int",
+   "label": "Total Tasks"
+  },
+  {
+   "fieldname": "pending_tasks",
+   "fieldtype": "Int",
+   "label": "Pending Task"
+  },
+  {
+   "fieldname": "column_break_kcrb",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "event_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Event Date",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "use_default_tasks",
+   "fieldtype": "Check",
+   "label": "Use Default Tasks"
+  },
+  {
+   "fieldname": "completed_tasks",
+   "fieldtype": "Int",
+   "label": "Completed Task"
+  },
+  {
+   "fieldname": "delayed_tasks",
+   "fieldtype": "Int",
+   "label": "Delayed Tasks"
+  },
+  {
+   "fieldname": "event_owner",
+   "fieldtype": "Link",
+   "label": "Event Owner",
+   "options": "User"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-11-29 14:36:35.922815",
+ "modified_by": "Administrator",
+ "module": "PSN Readiness Dashboard",
+ "name": "Event Readiness",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

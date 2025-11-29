@@ -1,0 +1,76 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:{sector_name} - {sector_lead}",
+ "creation": "2025-11-29 13:20:17.220029",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "sector_details_section",
+  "sector_name",
+  "sector_lead",
+  "members_section",
+  "members"
+ ],
+ "fields": [
+  {
+   "fieldname": "sector_details_section",
+   "fieldtype": "Section Break",
+   "label": "Sector Details"
+  },
+  {
+   "fieldname": "sector_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Sector Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "sector_lead",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Sector Lead",
+   "options": "User",
+   "reqd": 1
+  },
+  {
+   "fieldname": "members_section",
+   "fieldtype": "Section Break",
+   "label": "Members"
+  },
+  {
+   "fieldname": "members",
+   "fieldtype": "Table",
+   "label": "Members",
+   "options": "Sector Member"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-11-29 14:37:48.807913",
+ "modified_by": "Administrator",
+ "module": "PSN Readiness Dashboard",
+ "name": "Sector",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

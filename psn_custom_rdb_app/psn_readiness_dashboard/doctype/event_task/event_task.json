@@ -1,0 +1,124 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:{event} {sector} - {l2_task_name} {status}",
+ "creation": "2025-11-29 13:40:33.474201",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "event",
+  "l2_task_name",
+  "status",
+  "due_date",
+  "incharge",
+  "weightage",
+  "delay_reason",
+  "column_break_sced",
+  "sector",
+  "sector_lead",
+  "task_description",
+  "progress",
+  "updated_on"
+ ],
+ "fields": [
+  {
+   "fieldname": "event",
+   "fieldtype": "Link",
+   "label": "Event",
+   "options": "Event Readiness"
+  },
+  {
+   "fieldname": "l2_task_name",
+   "fieldtype": "Data",
+   "label": "L2 Task Name"
+  },
+  {
+   "default": "Pending",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Pending\nIn Progress\nCompleted\nDelayed"
+  },
+  {
+   "fieldname": "due_date",
+   "fieldtype": "Date",
+   "label": "Due Date"
+  },
+  {
+   "fieldname": "incharge",
+   "fieldtype": "Link",
+   "label": "User Incharge",
+   "options": "User"
+  },
+  {
+   "fieldname": "weightage",
+   "fieldtype": "Int",
+   "label": "Weightage",
+   "non_negative": 1
+  },
+  {
+   "fieldname": "delay_reason",
+   "fieldtype": "Small Text",
+   "label": "Delay Reason"
+  },
+  {
+   "fieldname": "column_break_sced",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "sector",
+   "fieldtype": "Link",
+   "label": "Sector",
+   "options": "Sector"
+  },
+  {
+   "fieldname": "sector_lead",
+   "fieldtype": "Link",
+   "label": "Sector Lead",
+   "options": "User"
+  },
+  {
+   "fieldname": "task_description",
+   "fieldtype": "Long Text",
+   "label": "Task Description"
+  },
+  {
+   "fieldname": "progress",
+   "fieldtype": "Percent",
+   "label": "Progress"
+  },
+  {
+   "fieldname": "updated_on",
+   "fieldtype": "Datetime",
+   "label": "Updated On"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-11-29 14:35:36.564349",
+ "modified_by": "Administrator",
+ "module": "PSN Readiness Dashboard",
+ "name": "Event Task",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
