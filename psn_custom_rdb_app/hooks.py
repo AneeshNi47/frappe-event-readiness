@@ -5,6 +5,12 @@ app_description = "PSN Events Readiness Dashboard"
 app_email = "saif.alremeithi@psn.gov.ae"
 app_license = "mit"
 
+workspaces = {
+    "Event Readiness Dashboard": {
+        "js": ["public/js/event_readiness_dashboard.js"]
+    }
+}
+
 doc_events = {
     "Event Readiness": {
         "after_insert": "psn_custom_rdb_app.psn_readiness_dashboard.event_logic.create_default_event_tasks"

@@ -1,36 +1,53 @@
 import frappe
 from frappe.utils import add_days, nowdate
 
+# ======================================================
+#  HELPER FUNCTIONS FOR PERMISSIONS
+# ======================================================
+
+
+def is_admin():
+    return frappe.session.user == "Administrator"
+
+
+def get_user_sector():
+    return frappe.db.get_value("User", frappe.session.user, "sector")
+
+
+def is_sector_lead():
+    return frappe.db.get_value("User", frappe.session.user, "is_sector_lead") == 1
+
+
+# ======================================================
+#  AUTO CREATE DEFAULT TASKS
+# ======================================================
 
 def create_default_event_tasks(doc, method=None):
-    """Auto create tasks from template when event is created"""
-
     if not doc.use_default_tasks:
         return
 
     templates = frappe.get_all(
         "Task Template",
-        fields=["name", "sector", "task_name", "description", "duration_days"]
+        fields=["sector", "task_name", "description", "duration_days"]
     )
 
     for tmpl in templates:
 
-        # Avoid duplicates
+        # avoid duplicates
         if frappe.db.exists("Event Task", {
             "event": doc.name,
             "sector": tmpl.sector,
-            "task_name": tmpl.task_name
+            "l2_task_name": tmpl.task_name
         }):
             continue
 
-        # Fetch sector lead
+        # get sector lead
         lead = frappe.db.get_value(
             "Sector Member",
             {"is_sector_lead": 1, "parent": tmpl.sector},
             "user"
         )
 
-        # Create task
         task = frappe.new_doc("Event Task")
         task.event = doc.name
         task.sector = tmpl.sector
@@ -41,21 +58,20 @@ def create_default_event_tasks(doc, method=None):
         task.weightage = 0
         task.progress = 0
 
-        # Use event_date instead of start_date
         base_date = doc.event_date or nowdate()
         task.due_date = add_days(base_date, tmpl.duration_days or 0)
 
         task.insert(ignore_permissions=True)
 
-    # Update counters on Event Readiness
     update_event_task_stats(doc.name)
+    frappe.msgprint("Default tasks added.")
 
-    frappe.msgprint("Default tasks have been added to this event.")
 
+# ======================================================
+#  UPDATE WEIGHTAGE & RECALCULATE READINESS
+# ======================================================
 
 def update_task_weightage(doc, method=None):
-    """Update task progress + recompute event stats"""
-
     weightage_map = {
         "Pending": 0,
         "Delayed": 0,
@@ -69,9 +85,11 @@ def update_task_weightage(doc, method=None):
     update_event_task_stats(doc.event)
 
 
-def update_event_task_stats(event_name):
-    """Recalculate all task counters and readiness score"""
+# ======================================================
+#  RECALCULATE METRICS FOR EVENT READINESS
+# ======================================================
 
+def update_event_task_stats(event_name):
     tasks = frappe.get_all(
         "Event Task",
         filters={"event": event_name},
@@ -94,34 +112,99 @@ def update_event_task_stats(event_name):
         "delayed_tasks": delayed,
         "event_readiness": readiness,
     })
-
     frappe.db.commit()
 
 
+# ======================================================
+#  FILTERED TASK LIST FOR CLIENT-SIDE UI
+# ======================================================
+
 @frappe.whitelist()
 def get_tasks_for_event(event_name):
-    return frappe.get_all(
+    user = frappe.session.user
+    user_sector = frappe.db.get_value("User", user, "sector")
+    is_lead = frappe.db.get_value("User", user, "is_sector_lead") or 0
+
+    tasks = frappe.get_all(
         "Event Task",
-        filters={"event": event_name},
-        fields=["name", "l2_task_name", "sector", "status", "creation"],
+        filters={"event": event_name, "sector": user_sector},
+        fields=["name", "l2_task_name", "sector",
+                "status", "incharge", "creation"],
         order_by="creation ASC"
     )
 
+    return {
+        "tasks": tasks,
+        "user_sector": user_sector,
+        "is_lead": int(is_lead),
+        "user": user
+    }
+
+
+# ======================================================
+#  UPDATE TASK STATUS (STRICT PERMISSIONS)
+# ======================================================
 
 @frappe.whitelist()
 def update_event_task_status(l2_task_name, status):
     task = frappe.get_doc("Event Task", l2_task_name)
+    user = frappe.session.user
+
+    if is_admin():
+        # Admin bypass
+        pass
+
+    else:
+        sector = get_user_sector()
+
+        # user must belong to same sector
+        if task.sector != sector:
+            frappe.throw("You cannot update tasks outside your sector")
+
+        # lead can update all tasks in sector
+        if is_sector_lead():
+            pass
+
+        # members: only if assigned
+        elif task.incharge != user:
+            frappe.throw("You can only update tasks assigned to you")
+
     task.status = status
-    task.save(ignore_permissions=True)
+    task.save()
+    update_event_task_stats(task.event)
     frappe.db.commit()
-    return "ok"
 
 
-def after_insert_user(doc, method):
-    if doc.sector:
-        frappe.get_doc({
-            "doctype": "User Permission",
-            "user": doc.name,
-            "allow": "Sector",
-            "for_value": doc.sector
-        }).insert(ignore_permissions=True)
+# ======================================================
+#  ADD TASK FROM POPUP MODAL
+# ======================================================
+
+@frappe.whitelist()
+def create_event_task_from_popup(event, l2_task_name, sector, incharge=None, due_date=None, task_description=None):
+    task = frappe.new_doc("Event Task")
+    task.event = event
+    task.l2_task_name = l2_task_name
+    task.sector = sector
+    task.incharge = incharge
+    task.due_date = due_date
+    task.task_description = task_description
+    task.status = "Pending"
+    task.weightage = 0
+    task.insert(ignore_permissions=True)
+    update_event_task_stats(event)
+    return task.name
+
+
+# ======================================================
+#  EVENT READINESS DASHBOARD DATA
+# ======================================================
+
+@frappe.whitelist()
+def get_event_dashboard_stats():
+    """Used by dashboard to show full event overview"""
+    return frappe.get_all(
+        "Event Readiness",
+        fields=["name", "event_name", "event_readiness", "total_tasks",
+                "completed_tasks", "pending_tasks", "custom_in_progress_tasks", "delayed_tasks"],
+        order_by="creation asc"
+    )

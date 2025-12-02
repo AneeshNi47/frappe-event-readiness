@@ -1,6 +1,15 @@
 {
- "charts": [],
- "content": "[{\"id\":\"bzg6Xqtus_\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Event Readiness Dashboard</span>\",\"col\":12}},{\"id\":\"ap7TiOWxEm\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"All Tasks\",\"col\":4}},{\"id\":\"6YRCN9e-9Y\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Members\",\"col\":4}},{\"id\":\"AsGj9BqJFj\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Events\",\"col\":4}},{\"id\":\"4q1wz5C5NY\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Events\",\"col\":4}},{\"id\":\"XKFGB_aXnv\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Default Task Template\",\"col\":4}},{\"id\":\"fkcZnz4w9X\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Organization Sectors\",\"col\":4}}]",
+ "charts": [
+  {
+   "chart_name": "Event Tasks by Status",
+   "label": "All Tasks"
+  },
+  {
+   "chart_name": "Event Readiness Chart",
+   "label": "Events Chart"
+  }
+ ],
+ "content": "[{\"id\":\"bzg6Xqtus_\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Event Readiness Dashboard</span>\",\"col\":12}},{\"id\":\"GV8zdp3ccJ\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Events Chart\",\"col\":6}},{\"id\":\"XtN2EiPm6E\",\"type\":\"chart\",\"data\":{\"chart_name\":\"All Tasks\",\"col\":6}},{\"id\":\"ap7TiOWxEm\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"All Tasks\",\"col\":4}},{\"id\":\"6YRCN9e-9Y\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Members\",\"col\":4}},{\"id\":\"AsGj9BqJFj\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Events\",\"col\":4}},{\"id\":\"4q1wz5C5NY\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Events\",\"col\":4}},{\"id\":\"XKFGB_aXnv\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Default Task Template\",\"col\":4}},{\"id\":\"fkcZnz4w9X\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Organization Sectors\",\"col\":4}}]",
  "creation": "2025-11-29 15:08:29.928627",
  "custom_blocks": [],
  "docstatus": 0,
@@ -13,7 +22,7 @@
  "is_hidden": 0,
  "label": "Event Readiness Dashboard",
  "links": [],
- "modified": "2025-11-29 15:47:07.215921",
+ "modified": "2025-12-02 15:19:50.201230",
  "modified_by": "Administrator",
  "module": "PSN Readiness Dashboard",
  "name": "Event Readiness Dashboard",

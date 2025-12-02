@@ -1,0 +1,20 @@
+{
+ "content": null,
+ "creation": "2025-11-30 17:02:57.174720",
+ "docstatus": 0,
+ "doctype": "Page",
+ "icon": "",
+ "idx": 0,
+ "modified": "2025-11-30 17:02:57.174720",
+ "modified_by": "Administrator",
+ "module": "PSN Readiness Dashboard",
+ "name": "event-readiness-dash",
+ "owner": "Administrator",
+ "page_name": "event-readiness-dash",
+ "roles": [],
+ "script": null,
+ "standard": "Yes",
+ "style": null,
+ "system_page": 0,
+ "title": "Event Readiness Dashboard"
+}
