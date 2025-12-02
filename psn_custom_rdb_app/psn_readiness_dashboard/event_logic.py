@@ -122,9 +122,28 @@ def update_event_task_stats(event_name):
 @frappe.whitelist()
 def get_tasks_for_event(event_name):
     user = frappe.session.user
+
+    # ADMIN ALWAYS SEES EVERYTHING
+    if user == "Administrator":
+        tasks = frappe.get_all(
+            "Event Task",
+            filters={"event": event_name},
+            fields=["name", "l2_task_name", "sector",
+                    "status", "incharge", "creation"],
+            order_by="creation ASC"
+        )
+        return {
+            "tasks": tasks,
+            "user": user,
+            "user_sector": None,
+            "is_lead": 0
+        }
+
+    # NORMAL USER
     user_sector = frappe.db.get_value("User", user, "sector")
     is_lead = frappe.db.get_value("User", user, "is_sector_lead") or 0
 
+    # Sector members and leads should see tasks only from their sector
     tasks = frappe.get_all(
         "Event Task",
         filters={"event": event_name, "sector": user_sector},
@@ -135,9 +154,9 @@ def get_tasks_for_event(event_name):
 
     return {
         "tasks": tasks,
+        "user": user,
         "user_sector": user_sector,
-        "is_lead": int(is_lead),
-        "user": user
+        "is_lead": int(is_lead)
     }
 
 
