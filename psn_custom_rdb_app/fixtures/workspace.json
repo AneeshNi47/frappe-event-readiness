@@ -1,0 +1,117 @@
+[
+ {
+  "charts": [
+   {
+    "chart_name": "Event Tasks by Status",
+    "label": "All Tasks",
+    "parent": "Event Readiness Dashboard",
+    "parentfield": "charts",
+    "parenttype": "Workspace"
+   },
+   {
+    "chart_name": "Event Readiness Chart",
+    "label": "Events Chart",
+    "parent": "Event Readiness Dashboard",
+    "parentfield": "charts",
+    "parenttype": "Workspace"
+   }
+  ],
+  "content": "[{\"id\":\"bzg6Xqtus_\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Event Readiness Dashboard</span>\",\"col\":12}},{\"id\":\"GV8zdp3ccJ\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Events Chart\",\"col\":6}},{\"id\":\"XtN2EiPm6E\",\"type\":\"chart\",\"data\":{\"chart_name\":\"All Tasks\",\"col\":6}},{\"id\":\"ap7TiOWxEm\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"All Tasks\",\"col\":4}},{\"id\":\"6YRCN9e-9Y\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Members\",\"col\":4}},{\"id\":\"AsGj9BqJFj\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Events\",\"col\":4}},{\"id\":\"4q1wz5C5NY\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Events\",\"col\":4}},{\"id\":\"XKFGB_aXnv\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Default Task Template\",\"col\":4}},{\"id\":\"fkcZnz4w9X\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Organization Sectors\",\"col\":4}}]",
+  "custom_blocks": [],
+  "docstatus": 0,
+  "doctype": "Workspace",
+  "for_user": "",
+  "hide_custom": 0,
+  "icon": "calendar",
+  "indicator_color": "light-blue",
+  "is_hidden": 0,
+  "label": "Event Readiness Dashboard",
+  "links": [],
+  "modified": "2025-12-02 15:19:50.201230",
+  "module": "PSN Readiness Dashboard",
+  "name": "Event Readiness Dashboard",
+  "number_cards": [
+   {
+    "label": "All Tasks",
+    "number_card_name": "All Tasks",
+    "parent": "Event Readiness Dashboard",
+    "parentfield": "number_cards",
+    "parenttype": "Workspace"
+   },
+   {
+    "label": "Members",
+    "number_card_name": "Sector Members",
+    "parent": "Event Readiness Dashboard",
+    "parentfield": "number_cards",
+    "parenttype": "Workspace"
+   },
+   {
+    "label": "Total Events",
+    "number_card_name": "Total Events",
+    "parent": "Event Readiness Dashboard",
+    "parentfield": "number_cards",
+    "parenttype": "Workspace"
+   }
+  ],
+  "parent_page": "",
+  "public": 1,
+  "quick_lists": [],
+  "restrict_to_domain": null,
+  "roles": [],
+  "sequence_id": 1.0,
+  "shortcuts": [
+   {
+    "color": "Grey",
+    "doc_view": "List",
+    "format": null,
+    "icon": null,
+    "kanban_board": null,
+    "label": "Events",
+    "link_to": "Event Readiness",
+    "parent": "Event Readiness Dashboard",
+    "parentfield": "shortcuts",
+    "parenttype": "Workspace",
+    "report_ref_doctype": null,
+    "restrict_to_domain": null,
+    "stats_filter": "[]",
+    "type": "DocType",
+    "url": null
+   },
+   {
+    "color": "Grey",
+    "doc_view": "List",
+    "format": null,
+    "icon": null,
+    "kanban_board": null,
+    "label": "Default Task Template",
+    "link_to": "Task Template",
+    "parent": "Event Readiness Dashboard",
+    "parentfield": "shortcuts",
+    "parenttype": "Workspace",
+    "report_ref_doctype": null,
+    "restrict_to_domain": null,
+    "stats_filter": "[]",
+    "type": "DocType",
+    "url": null
+   },
+   {
+    "color": "Grey",
+    "doc_view": "List",
+    "format": null,
+    "icon": null,
+    "kanban_board": null,
+    "label": "Organization Sectors",
+    "link_to": "Sector",
+    "parent": "Event Readiness Dashboard",
+    "parentfield": "shortcuts",
+    "parenttype": "Workspace",
+    "report_ref_doctype": null,
+    "restrict_to_domain": null,
+    "stats_filter": "[]",
+    "type": "DocType",
+    "url": null
+   }
+  ],
+  "title": "Event Readiness Dashboard"
+ }
+]

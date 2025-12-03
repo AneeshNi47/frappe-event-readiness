@@ -12,6 +12,14 @@ fixtures = [
                       "Event UI Customization"
                   ]
                   ]]
+     },
+    {"doctype":
+     "Workspace",
+     "filters": [["name", "in",
+                  [
+                      "Event Readiness Dashboard"
+                  ]
+                  ]]
      }
 ]
 
