@@ -1,0 +1,35 @@
+{
+ "chart_name": "Event Readiness Chart",
+ "chart_type": "Report",
+ "creation": "2025-12-02 15:19:03.474609",
+ "currency": "AED",
+ "custom_options": "{\n  \"on_chart_click\": \"psn_open_event(label)\"\n}",
+ "docstatus": 0,
+ "doctype": "Dashboard Chart",
+ "dynamic_filters_json": "{}",
+ "filters_json": "{}",
+ "group_by_type": "Count",
+ "idx": 0,
+ "is_public": 0,
+ "is_standard": 1,
+ "modified": "2025-12-03 14:06:56.241276",
+ "modified_by": "Administrator",
+ "module": "PSN Readiness Dashboard",
+ "name": "Event Readiness Chart",
+ "number_of_groups": 0,
+ "owner": "Administrator",
+ "report_name": "Event Readiness Report",
+ "roles": [],
+ "show_values_over_chart": 0,
+ "time_interval": "Yearly",
+ "timeseries": 0,
+ "timespan": "Last Year",
+ "type": "Bar",
+ "use_report_chart": 0,
+ "x_field": "event_name",
+ "y_axis": [
+  {
+   "y_field": "event_readiness"
+  }
+ ]
+}
