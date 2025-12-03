@@ -1,5 +1,5 @@
 import frappe
-from frappe.utils import add_days, nowdate
+from frappe.utils import add_days, cint, nowdate
 
 # ======================================================
 #  HELPER FUNCTIONS FOR PERMISSIONS
@@ -122,47 +122,48 @@ def update_event_task_stats(event_name):
 @frappe.whitelist()
 def get_tasks_for_event(event_name):
     user = frappe.session.user
-
-    # ADMIN ALWAYS SEES EVERYTHING
-    if user == "Administrator":
-        tasks = frappe.get_all(
-            "Event Task",
-            filters={"event": event_name},
-            fields=["name", "l2_task_name", "sector",
-                    "status", "incharge", "creation"],
-            order_by="creation ASC"
-        )
-        return {
-            "tasks": tasks,
-            "user": user,
-            "user_sector": None,
-            "is_lead": 0
-        }
-
-    # NORMAL USER
     user_sector = frappe.db.get_value("User", user, "sector")
     is_lead = frappe.db.get_value("User", user, "is_sector_lead") or 0
 
-    # Sector members and leads should see tasks only from their sector
     tasks = frappe.get_all(
         "Event Task",
-        filters={"event": event_name, "sector": user_sector},
-        fields=["name", "l2_task_name", "sector",
-                "status", "incharge", "creation"],
-        order_by="creation ASC"
+        filters={"event": event_name},
+        fields=["name", "l2_task_name", "sector", "status",
+                "incharge", "creation"],
+        order_by="creation asc"
     )
 
+    # Fetch sector members for dropdowns
+    sector_users = {}
+    for t in tasks:
+        if t["sector"] not in sector_users:
+            sector_users[t["sector"]] = frappe.db.get_all(
+                "Sector Member",
+                filters={"parent": t["sector"]},
+                fields=["user"]
+            )
+
+    print(sector_users)
     return {
         "tasks": tasks,
         "user": user,
         "user_sector": user_sector,
-        "is_lead": int(is_lead)
+        "is_lead": is_lead,
+        "sector_users": sector_users
     }
-
 
 # ======================================================
 #  UPDATE TASK STATUS (STRICT PERMISSIONS)
 # ======================================================
+
+
+@frappe.whitelist()
+def update_task_incharge(task_name, user):
+    doc = frappe.get_doc("Event Task", task_name)
+    doc.incharge = user
+    doc.save()
+    frappe.db.commit()
+
 
 @frappe.whitelist()
 def update_event_task_status(l2_task_name, status):
@@ -227,3 +228,49 @@ def get_event_dashboard_stats():
                 "completed_tasks", "pending_tasks", "custom_in_progress_tasks", "delayed_tasks"],
         order_by="creation asc"
     )
+
+
+@frappe.whitelist()
+def create_sector_user(sector, full_name, email, is_lead=0):
+    """Create (or reuse) a User, attach to a Sector, and add to Sector Members."""
+    is_lead = cint(is_lead)
+
+    # 1. Create or fetch the User
+    user_name = frappe.db.get_value("User", {"email": email}, "name")
+
+    if not user_name:
+        user_doc = frappe.get_doc({
+            "doctype": "User",
+            "email": email,
+            "first_name": full_name,
+            "enabled": 1,
+            "send_welcome_email": 0,
+        })
+
+        # if you have a custom 'sector' field on User
+        if frappe.get_meta("User").has_field("sector"):
+            user_doc.set("sector", sector)
+
+        # You can also add a default Role here if you want:
+        # user_doc.append("roles", {"role": "Sector User"})
+
+        # Set a default password (they should change it later)
+        user_doc.new_password = "ChangeMe123!"
+
+        user_doc.insert(ignore_permissions=True)
+        user_name = user_doc.name
+    else:
+        # Update existing user sector if field exists
+        if frappe.get_meta("User").has_field("sector"):
+            frappe.db.set_value("User", user_name, "sector", sector)
+
+    # 2. Add to Sector → Members child table (if not already present)
+    if not frappe.db.exists("Sector Member", {"parent": sector, "user": user_name}):
+        sector_doc = frappe.get_doc("Sector", sector)
+        sector_doc.append("members", {
+            "user": user_name,
+            "is_sector_lead": is_lead,
+        })
+        sector_doc.save(ignore_permissions=True)
+
+    return {"user": user_name}

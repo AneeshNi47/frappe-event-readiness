@@ -23,11 +23,11 @@ fixtures = [
      }
 ]
 
-workspaces = {
-    "Event Readiness Dashboard": {
-        "js": ["public/js/event_readiness_dashboard.js"]
-    }
-}
+# workspaces = {
+#     "Event Readiness Dashboard": {
+#         "js": ["public/js/event_readiness_dashboard.js"]
+#     }
+# }
 
 doc_events = {
     "Event Readiness": {
