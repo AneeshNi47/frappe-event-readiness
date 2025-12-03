@@ -1,5 +1,5 @@
 import frappe
-from frappe.utils import add_days, cint, nowdate
+from frappe.utils import add_days, nowdate
 
 # ======================================================
 #  HELPER FUNCTIONS FOR PERMISSIONS
@@ -232,45 +232,38 @@ def get_event_dashboard_stats():
 
 @frappe.whitelist()
 def create_sector_user(sector, full_name, email, is_lead=0):
-    """Create (or reuse) a User, attach to a Sector, and add to Sector Members."""
-    is_lead = cint(is_lead)
+    # Check if user exists by email not by name
+    existing_user = frappe.db.exists("User", {"email": email})
+    if existing_user:
+        frappe.throw(f"User with email {email} already exists")
 
-    # 1. Create or fetch the User
-    user_name = frappe.db.get_value("User", {"email": email}, "name")
+    # Create new user correctly
+    user = frappe.new_doc("User")
+    user.first_name = full_name
+    user.email = email
+    user.send_welcome_email = 0
+    user.user_type = "System User"
+    user.username = email.split("@")[0]
+    user.append_roles = "Sector User"
 
-    if not user_name:
-        user_doc = frappe.get_doc({
-            "doctype": "User",
-            "email": email,
-            "first_name": full_name,
-            "enabled": 1,
-            "send_welcome_email": 0,
-        })
+    # Custom sector field
+    if frappe.db.has_column("User", "sector"):
+        user.sector = sector
 
-        # if you have a custom 'sector' field on User
-        if frappe.get_meta("User").has_field("sector"):
-            user_doc.set("sector", sector)
+    user.insert(ignore_permissions=True)
 
-        # You can also add a default Role here if you want:
-        # user_doc.append("roles", {"role": "Sector User"})
+    # Add to sector child table
+    sec = frappe.get_doc("Sector", sector)
+    sec.append("members", {
+        "user": user.name,
+        "is_sector_lead": is_lead
+    })
+    sec.save(ignore_permissions=True)
 
-        # Set a default password (they should change it later)
-        user_doc.new_password = "ChangeMe123!"
+    # If lead → update sector lead field
+    if is_lead:
+        sec.sector_lead = user.name
+        sec.save(ignore_permissions=True)
 
-        user_doc.insert(ignore_permissions=True)
-        user_name = user_doc.name
-    else:
-        # Update existing user sector if field exists
-        if frappe.get_meta("User").has_field("sector"):
-            frappe.db.set_value("User", user_name, "sector", sector)
-
-    # 2. Add to Sector → Members child table (if not already present)
-    if not frappe.db.exists("Sector Member", {"parent": sector, "user": user_name}):
-        sector_doc = frappe.get_doc("Sector", sector)
-        sector_doc.append("members", {
-            "user": user_name,
-            "is_sector_lead": is_lead,
-        })
-        sector_doc.save(ignore_permissions=True)
-
-    return {"user": user_name}
+    frappe.db.commit()
+    return user.name
