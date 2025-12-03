@@ -4,6 +4,16 @@ app_publisher = "PSN"
 app_description = "PSN Events Readiness Dashboard"
 app_email = "saif.alremeithi@psn.gov.ae"
 app_license = "mit"
+fixtures = [
+    {"doctype":
+     "Client Script",
+     "filters": [["name", "in",
+                  [
+                      "Event UI Customization"
+                  ]
+                  ]]
+     }
+]
 
 workspaces = {
     "Event Readiness Dashboard": {
