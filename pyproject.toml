@@ -1,7 +1,7 @@
 [project]
 name = "psn_custom_rdb_app"
 authors = [
-    { name = "PSN", email = "saif.alremeithi@psn.gov.ae"}
+    { name = "PSN", email = "me@aneeshbharath.com"}
 ]
 description = "PSN Events Readiness Dashboard"
 requires-python = ">=3.10"

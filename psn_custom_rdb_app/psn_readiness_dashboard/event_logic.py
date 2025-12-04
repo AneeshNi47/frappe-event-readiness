@@ -251,6 +251,8 @@ def create_sector_user(sector, full_name, email, is_lead=0):
         user.sector = sector
 
     user.insert(ignore_permissions=True)
+    user.append("roles", {"role": "Event Readiness Role"})
+    user.save(ignore_permissions=True)
 
     # Add to sector child table
     sec = frappe.get_doc("Sector", sector)

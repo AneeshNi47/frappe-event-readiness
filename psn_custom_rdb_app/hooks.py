@@ -2,7 +2,7 @@ app_name = "psn_custom_rdb_app"
 app_title = "PSN Readiness Dashboard"
 app_publisher = "PSN"
 app_description = "PSN Events Readiness Dashboard"
-app_email = "saif.alremeithi@psn.gov.ae"
+app_email = "me@me@aneeshbharath.com"
 app_license = "mit"
 fixtures = [
     {"doctype":
