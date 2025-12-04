@@ -10,7 +10,7 @@ frappe.query_reports["Event Readiness Progress Chart Source"] = {
                 labels: data.map(d => d.event_name),
                 datasets: [
                     {
-                        name: "Readiness %",
+                        name: "Readinessssds %",
                         values: data.map(d => d.progress)
                     }
                 ],

@@ -125,15 +125,30 @@ def get_tasks_for_event(event_name):
     user_sector = frappe.db.get_value("User", user, "sector")
     is_lead = frappe.db.get_value("User", user, "is_sector_lead") or 0
 
+    # ---------- ACCESS LOGIC ----------
+    # ADMIN → Full access
+    if user == "Administrator":
+        task_filters = {"event": event_name}
+
+    # SECTOR LEAD → All tasks in their sector
+    elif is_lead and user_sector:
+        task_filters = {"event": event_name, "sector": user_sector}
+
+    # SECTOR MEMBER → Only tasks assigned to them
+    else:
+        task_filters = {"event": event_name, "incharge": user}
+
+    # ---------- FETCH TASKS BASED ON FILTER ----------
     tasks = frappe.get_all(
         "Event Task",
-        filters={"event": event_name},
+        filters=task_filters,
         fields=["name", "l2_task_name", "sector", "status",
                 "incharge", "creation"],
         order_by="creation asc"
     )
 
-    # Fetch sector members for dropdowns
+    # ---------- FETCH SECTOR USERS FOR DROPDOWNS ----------
+    # Only fetch users for sectors that appear in visible tasks
     sector_users = {}
     for t in tasks:
         if t["sector"] not in sector_users:
@@ -143,7 +158,7 @@ def get_tasks_for_event(event_name):
                 fields=["user"]
             )
 
-    print(sector_users)
+    # ---------- RETURN EXACT SAME STRUCTURE AS BEFORE ----------
     return {
         "tasks": tasks,
         "user": user,
@@ -151,7 +166,6 @@ def get_tasks_for_event(event_name):
         "is_lead": is_lead,
         "sector_users": sector_users
     }
-
 # ======================================================
 #  UPDATE TASK STATUS (STRICT PERMISSIONS)
 # ======================================================

@@ -27,7 +27,7 @@
  "is_hidden": 0,
  "label": "Event Readiness Dashboard",
  "links": [],
- "modified": "2025-12-03 23:10:06.063506",
+ "modified": "2025-12-04 18:58:09.279831",
  "modified_by": "Administrator",
  "module": "PSN Readiness Dashboard",
  "name": "Event Readiness Dashboard",
@@ -55,7 +55,11 @@
    "quick_list_filter": "[]"
   }
  ],
- "roles": [],
+ "roles": [
+  {
+   "role": "Event Readiness Role"
+  }
+ ],
  "sequence_id": 1.0,
  "shortcuts": [
   {

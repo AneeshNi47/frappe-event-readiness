@@ -11,18 +11,22 @@
  "filters_json": "[]",
  "group_by_based_on": "status",
  "group_by_type": "Count",
- "idx": 1,
+ "idx": 2,
  "is_public": 0,
  "is_standard": 1,
- "last_synced_on": "2025-12-03 20:30:05.822909",
- "modified": "2025-12-03 20:30:30.732126",
+ "last_synced_on": "2025-12-04 18:54:57.023927",
+ "modified": "2025-12-04 18:58:55.808161",
  "modified_by": "Administrator",
  "module": "PSN Readiness Dashboard",
  "name": "Event Tasks by Status",
  "number_of_groups": 0,
  "owner": "Administrator",
  "parent_document_type": "",
- "roles": [],
+ "roles": [
+  {
+   "role": "Event Readiness Role"
+  }
+ ],
  "show_values_over_chart": 0,
  "source": "",
  "time_interval": "Yearly",
