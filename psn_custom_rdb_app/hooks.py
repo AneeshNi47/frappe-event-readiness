@@ -23,6 +23,14 @@ fixtures = [
         "filters": [
             ["role", "in", ["Event Readiness Role"]]
         ]
+    },
+    {
+        "doctype": "Role Permission for Page and Report",
+        "filters": [["role", "in", ["Event Readiness Role"]]]
+    },
+    {
+        "doctype": "DocPerm",
+        "filters": [["parent", "=", "Event Task"]]
     }
 ]
 
@@ -33,4 +41,12 @@ doc_events = {
     "Event Task": {
         "on_update": "psn_custom_rdb_app.psn_readiness_dashboard.event_logic.update_task_weightage"
     }
+}
+
+permission_query_conditions = {
+    "Event Task": "psn_custom_rdb_app.psn_readiness_dashboard.doctype.event_task.event_task.get_permission_query_conditions"
+}
+
+has_permission = {
+    "Event Task": "psn_custom_rdb_app.psn_readiness_dashboard.doctype.event_task.event_task.has_permission"
 }

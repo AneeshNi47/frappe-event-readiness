@@ -27,7 +27,7 @@
  "is_hidden": 0,
  "label": "Event Readiness Dashboard",
  "links": [],
- "modified": "2025-12-04 18:58:09.279831",
+ "modified": "2025-12-04 23:14:27.620285",
  "modified_by": "Administrator",
  "module": "PSN Readiness Dashboard",
  "name": "Event Readiness Dashboard",
@@ -73,7 +73,7 @@
   {
    "color": "Grey",
    "doc_view": "List",
-   "label": "Default Task Template",
+   "label": "Task Template",
    "link_to": "Task Template",
    "stats_filter": "[]",
    "type": "DocType"
@@ -81,9 +81,15 @@
   {
    "color": "Grey",
    "doc_view": "List",
-   "label": "Organization Sectors",
+   "label": "Sectors",
    "link_to": "Sector",
    "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "doc_view": "List",
+   "label": "Event Tasks",
+   "link_to": "Event Task",
    "type": "DocType"
   }
  ],

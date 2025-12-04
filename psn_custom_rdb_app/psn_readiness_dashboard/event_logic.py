@@ -122,43 +122,43 @@ def update_event_task_stats(event_name):
 @frappe.whitelist()
 def get_tasks_for_event(event_name):
     user = frappe.session.user
-    user_sector = frappe.db.get_value("User", user, "sector")
-    is_lead = frappe.db.get_value("User", user, "is_sector_lead") or 0
 
-    # ---------- ACCESS LOGIC ----------
-    # ADMIN → Full access
-    if user == "Administrator":
-        task_filters = {"event": event_name}
+    user_sector, is_lead = frappe.db.get_value(
+        "User",
+        user,
+        ["sector", "is_sector_lead"]
+    ) or (None, 0)
 
-    # SECTOR LEAD → All tasks in their sector
-    elif is_lead and user_sector:
-        task_filters = {"event": event_name, "sector": user_sector}
+    # Base filters
+    filters = {"event": event_name}
 
-    # SECTOR MEMBER → Only tasks assigned to them
-    else:
-        task_filters = {"event": event_name, "incharge": user}
+    if user != "Administrator":
+        if is_lead:
+            # Sector lead sees only tasks in their sector
+            filters["sector"] = user_sector
+        else:
+            # Sector member sees only tasks assigned to them
+            filters["incharge"] = user
 
-    # ---------- FETCH TASKS BASED ON FILTER ----------
     tasks = frappe.get_all(
         "Event Task",
-        filters=task_filters,
-        fields=["name", "l2_task_name", "sector", "status",
-                "incharge", "creation"],
+        filters=filters,
+        fields=["name", "l2_task_name", "sector",
+                "status", "incharge", "creation"],
         order_by="creation asc"
     )
 
-    # ---------- FETCH SECTOR USERS FOR DROPDOWNS ----------
-    # Only fetch users for sectors that appear in visible tasks
+    # Build sector-wise user mapping (only for leads/admin)
     sector_users = {}
-    for t in tasks:
-        if t["sector"] not in sector_users:
-            sector_users[t["sector"]] = frappe.db.get_all(
+    if user == "Administrator" or is_lead:
+        sectors = set([t["sector"] for t in tasks])
+        for sector in sectors:
+            sector_users[sector] = frappe.db.get_all(
                 "Sector Member",
-                filters={"parent": t["sector"]},
+                filters={"parent": sector},
                 fields=["user"]
             )
 
-    # ---------- RETURN EXACT SAME STRUCTURE AS BEFORE ----------
     return {
         "tasks": tasks,
         "user": user,
@@ -166,6 +166,7 @@ def get_tasks_for_event(event_name):
         "is_lead": is_lead,
         "sector_users": sector_users
     }
+
 # ======================================================
 #  UPDATE TASK STATUS (STRICT PERMISSIONS)
 # ======================================================
