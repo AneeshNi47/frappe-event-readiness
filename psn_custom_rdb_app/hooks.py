@@ -2,32 +2,29 @@ app_name = "psn_custom_rdb_app"
 app_title = "PSN Readiness Dashboard"
 app_publisher = "PSN"
 app_description = "PSN Events Readiness Dashboard"
-app_email = "me@me@aneeshbharath.com"
+app_email = "me@aneeshbharath.com"
 app_license = "mit"
-fixtures = [
-    {"doctype":
-     "Client Script",
-     "filters": [["name", "in",
-                  [
-                      "Event UI Customization"
-                  ]
-                  ]]
-     },
-    {"doctype":
-     "Workspace",
-     "filters": [["name", "in",
-                  [
-                      "Event Readiness Dashboard"
-                  ]
-                  ]]
-     }
-]
 
-# workspaces = {
-#     "Event Readiness Dashboard": {
-#         "js": ["public/js/event_readiness_dashboard.js"]
-#     }
-# }
+fixtures = [
+    {
+        "doctype": "Client Script",
+        "filters": [["name", "in", ["Event UI Customization"]]]
+    },
+    {
+        "doctype": "Workspace",
+        "filters": [["name", "in", ["Event Readiness Dashboard"]]]
+    },
+    {
+        "doctype": "Role",
+        "filters": [["name", "in", ["Event Readiness Role"]]]
+    },
+    {
+        "doctype": "DocPerm",
+        "filters": [
+            ["role", "in", ["Event Readiness Role"]]
+        ]
+    }
+]
 
 doc_events = {
     "Event Readiness": {
