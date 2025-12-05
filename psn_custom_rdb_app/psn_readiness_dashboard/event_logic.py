@@ -6,6 +6,15 @@ from frappe.utils import add_days, nowdate
 # ======================================================
 
 
+@frappe.whitelist()
+def get_all_events():
+    """Return all events with dates for calendar"""
+    return frappe.get_all(
+        "Event Readiness",
+        fields=["name", "event_name", "event_date"]
+    )
+
+
 def is_admin():
     return frappe.session.user == "Administrator"
 

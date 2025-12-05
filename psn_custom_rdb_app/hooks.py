@@ -5,36 +5,48 @@ app_description = "PSN Events Readiness Dashboard"
 app_email = "me@aneeshbharath.com"
 app_license = "mit"
 
-
 fixtures = [
+    # Custom fields required by the system
     {
         "doctype": "Custom Field",
         "filters": [
-            ["dt", "in", ["User", "Event Task", "Event Readiness"]]
+            ["name", "in", [
+                # User fields
+                "User-sector",
+                "User-is_sector_lead",
+
+                # Event Task fields
+                "Event Task-sector",
+                "Event Task-incharge",
+
+                # Event Readiness fields (if any custom)
+                # add only if created
+            ]]
         ]
     },
+
+    # Custom Role
     {
         "doctype": "Role",
         "filters": [["name", "=", "Event Readiness Role"]]
     },
+
+    # Permissions for the role
     {
         "doctype": "DocPerm",
         "filters": [["role", "=", "Event Readiness Role"]]
     },
+
+    # Workspace
     {
         "doctype": "Workspace",
         "filters": [["name", "=", "Event Readiness Dashboard"]]
     },
+
+    # UI Script
     {
         "doctype": "Client Script",
         "filters": [["name", "=", "Event UI Customization"]]
-    },
-    {
-        "doctype": "Property Setter",
-        "filters": [
-            ["doc_type", "in", ["Event Task", "User", "Event Readiness"]],
-            ["property", "in", ["mandatory", "reqd", "options", "hidden"]]
-        ]
     }
 ]
 

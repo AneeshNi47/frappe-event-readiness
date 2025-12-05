@@ -16,11 +16,18 @@
     "parenttype": "Workspace"
    }
   ],
-  "content": "[{\"id\":\"bzg6Xqtus_\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Event Readiness Dashboard</span>\",\"col\":6}},{\"id\":\"XyyrqOFdKp\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Create Event\",\"col\":6}},{\"id\":\"GV8zdp3ccJ\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Events Chart\",\"col\":6}},{\"id\":\"XtN2EiPm6E\",\"type\":\"chart\",\"data\":{\"chart_name\":\"All Tasks\",\"col\":6}},{\"id\":\"ap7TiOWxEm\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"All Tasks\",\"col\":4}},{\"id\":\"6YRCN9e-9Y\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Members\",\"col\":4}},{\"id\":\"AsGj9BqJFj\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Events\",\"col\":4}},{\"id\":\"4q1wz5C5NY\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Events\",\"col\":4}},{\"id\":\"XKFGB_aXnv\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Default Task Template\",\"col\":4}},{\"id\":\"fkcZnz4w9X\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Organization Sectors\",\"col\":4}},{\"id\":\"MSb3auaYBR\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Active Events\",\"col\":12}}]",
+  "content": "[{\"id\":\"bzg6Xqtus_\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Event Readiness Dashboard</span>\",\"col\":6}},{\"id\":\"XyyrqOFdKp\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Create Event\",\"col\":6}},{\"id\":\"GV8zdp3ccJ\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Events Chart\",\"col\":6}},{\"id\":\"XtN2EiPm6E\",\"type\":\"chart\",\"data\":{\"chart_name\":\"All Tasks\",\"col\":6}},{\"id\":\"ap7TiOWxEm\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"All Tasks\",\"col\":4}},{\"id\":\"2KwdItWR3O\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Calendar View\",\"col\":12}},{\"id\":\"6YRCN9e-9Y\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Members\",\"col\":4}},{\"id\":\"AsGj9BqJFj\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Events\",\"col\":4}},{\"id\":\"4q1wz5C5NY\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Events\",\"col\":4}},{\"id\":\"MSb3auaYBR\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Active Events\",\"col\":12}}]",
   "custom_blocks": [
    {
     "custom_block_name": "Create Event",
     "label": "Create Event",
+    "parent": "Event Readiness Dashboard",
+    "parentfield": "custom_blocks",
+    "parenttype": "Workspace"
+   },
+   {
+    "custom_block_name": "Calendar View",
+    "label": "Calendar View",
     "parent": "Event Readiness Dashboard",
     "parentfield": "custom_blocks",
     "parenttype": "Workspace"
@@ -35,7 +42,7 @@
   "is_hidden": 0,
   "label": "Event Readiness Dashboard",
   "links": [],
-  "modified": "2025-12-04 23:14:27.620285",
+  "modified": "2025-12-05 15:13:15.401579",
   "module": "PSN Readiness Dashboard",
   "name": "Event Readiness Dashboard",
   "number_cards": [
@@ -98,57 +105,6 @@
     "report_ref_doctype": null,
     "restrict_to_domain": null,
     "stats_filter": "[]",
-    "type": "DocType",
-    "url": null
-   },
-   {
-    "color": "Grey",
-    "doc_view": "List",
-    "format": null,
-    "icon": null,
-    "kanban_board": null,
-    "label": "Task Template",
-    "link_to": "Task Template",
-    "parent": "Event Readiness Dashboard",
-    "parentfield": "shortcuts",
-    "parenttype": "Workspace",
-    "report_ref_doctype": null,
-    "restrict_to_domain": null,
-    "stats_filter": "[]",
-    "type": "DocType",
-    "url": null
-   },
-   {
-    "color": "Grey",
-    "doc_view": "List",
-    "format": null,
-    "icon": null,
-    "kanban_board": null,
-    "label": "Sectors",
-    "link_to": "Sector",
-    "parent": "Event Readiness Dashboard",
-    "parentfield": "shortcuts",
-    "parenttype": "Workspace",
-    "report_ref_doctype": null,
-    "restrict_to_domain": null,
-    "stats_filter": "[]",
-    "type": "DocType",
-    "url": null
-   },
-   {
-    "color": null,
-    "doc_view": "List",
-    "format": null,
-    "icon": null,
-    "kanban_board": null,
-    "label": "Event Tasks",
-    "link_to": "Event Task",
-    "parent": "Event Readiness Dashboard",
-    "parentfield": "shortcuts",
-    "parenttype": "Workspace",
-    "report_ref_doctype": null,
-    "restrict_to_domain": null,
-    "stats_filter": null,
     "type": "DocType",
     "url": null
    }
