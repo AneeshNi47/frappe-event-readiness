@@ -5,70 +5,47 @@ app_description = "PSN Events Readiness Dashboard"
 app_email = "me@aneeshbharath.com"
 app_license = "mit"
 
-# ------------------------------------------------------------
-# FIXTURES — ensure all customisation is portable across systems
-# ------------------------------------------------------------
 fixtures = [
 
-    # Custom Fields added to core doctypes
+    # Custom fields like sector, is_sector_lead etc.
     {
         "doctype": "Custom Field",
         "filters": [
-            ["dt", "in", ["User", "Event Task"]],
-            ["name", "like", "%sector%"],
+            ["dt", "in", ["User", "Event Task"]]
         ]
     },
 
-    # Custom Role for this app
+    # Custom Role for this system
     {
         "doctype": "Role",
         "filters": [["name", "=", "Event Readiness Role"]]
     },
 
-    # Role-based DocPerms
+    # Permissions assigned to this role
     {
         "doctype": "DocPerm",
         "filters": [["role", "=", "Event Readiness Role"]]
     },
 
-    # Page + Report access for the same role
-    {
-        "doctype": "Role Permission for Page and Report",
-        "filters": [["role", "=", "Event Readiness Role"]]
-    },
-
-    # Client scripts for UI logic
-    {
-        "doctype": "Client Script",
-        "filters": [["name", "in", ["Event UI Customization"]]]
-    },
-
-    # Workspace/Menu layout
+    # Workspace menu
     {
         "doctype": "Workspace",
         "filters": [["name", "=", "Event Readiness Dashboard"]]
     },
 
-    # If you modified any default field via Customize Form
+    # UI custom script
     {
-        "doctype": "Property Setter",
-        "filters": [
-            ["doc_type", "in", ["Event Readiness", "Event Task", "User"]]
-        ]
+        "doctype": "Client Script",
+        "filters": [["name", "=", "Event UI Customization"]]
     },
 
-    # Dashboard charts created for this app (optional but recommended)
+    # If you modified core doctypes via Customize Form
     {
-        "doctype": "Dashboard Chart",
-        "filters": [
-            ["module", "=", "PSN Readiness Dashboard"]
-        ]
+        "doctype": "Property Setter",
+        "filters": [["doc_type", "in", ["Event Task", "User", "Event Readiness"]]]
     }
 ]
 
-# ------------------------------------------------------------
-# EVENTS — automatic logic triggers
-# ------------------------------------------------------------
 doc_events = {
     "Event Readiness": {
         "after_insert": "psn_custom_rdb_app.psn_readiness_dashboard.event_logic.create_default_event_tasks"
@@ -78,9 +55,6 @@ doc_events = {
     }
 }
 
-# ------------------------------------------------------------
-# PERMISSIONS — Query-level security for Event Task
-# ------------------------------------------------------------
 permission_query_conditions = {
     "Event Task": "psn_custom_rdb_app.psn_readiness_dashboard.doctype.event_task.event_task.get_permission_query_conditions"
 }
