@@ -6,46 +6,64 @@ app_email = "me@aneeshbharath.com"
 app_license = "mit"
 
 fixtures = [
-    # Custom fields on core doctypes only
     {
         "doctype": "Custom Field",
-        "filters": [
-            ["dt", "in", ["User"]]   # ONLY core doctypes
-        ]
+        "filters": [["dt", "=", "Event Task"]]
     },
-
-    # Custom role
+    {
+        "doctype": "Custom Field",
+        "filters": [["dt", "=", "Event Readiness"]]
+    },
     {
         "doctype": "Role",
         "filters": [["name", "=", "Event Readiness Role"]]
     },
-
-    # Permissions associated with the custom role
     {
         "doctype": "DocPerm",
         "filters": [["role", "=", "Event Readiness Role"]]
     },
-
-    # The workspace UI block
     {
         "doctype": "Workspace",
         "filters": [["name", "=", "Event Readiness Dashboard"]]
     },
-
-    # Client script rendering the dashboard UI
     {
         "doctype": "Client Script",
-        "filters": [["name", "=", "Event UI Customization"]]
-    },
-
-    # Property setters for modifications on User doctype only
-    {
-        "doctype": "Property Setter",
         "filters": [
-            ["doc_type", "=", "User"]   # Only core doctypes require this
+            ["name", "in", [
+                "Event UI Customization",
+                "Event Readiness Dashboard Script",
+                "Event Task UI Enhancements"
+            ]]
+        ]
+    },
+    {
+        "doctype": "Custom HTML Block",
+        "filters": [
+            ["name", "in", [
+                "Create Event",
+                "Calendar View"
+            ]]
+        ]
+    },
+    {
+        "doctype": "Report",
+        "filters": [
+            ["name", "in", [
+                "Event Readiness Report"
+            ]]
+        ]
+    },
+    {
+        "doctype": "Report Filter",
+        "filters": [
+            ["parent", "in", [
+                "Event Readiness Summary",
+                "Event Task Details"
+            ]]
         ]
     }
 ]
+
 doc_events = {
     "Event Readiness": {
         "after_insert": "psn_custom_rdb_app.psn_readiness_dashboard.event_logic.create_default_event_tasks"

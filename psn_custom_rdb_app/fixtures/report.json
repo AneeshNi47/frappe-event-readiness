@@ -1,0 +1,40 @@
+[
+ {
+  "add_total_row": 0,
+  "add_translate_data": 0,
+  "columns": [],
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Report",
+  "filters": [],
+  "is_standard": "Yes",
+  "javascript": null,
+  "json": null,
+  "letter_head": null,
+  "modified": "2025-12-04 18:59:32.933100",
+  "module": "PSN Readiness Dashboard",
+  "name": "Event Readiness Report",
+  "prepared_report": 0,
+  "query": "SELECT\n    name AS event_id,\n    event_name,\n    event_readiness\nFROM\n    `tabEvent Readiness`\nORDER BY\n    creation",
+  "ref_doctype": "Event Readiness",
+  "reference_report": null,
+  "report_name": "Event Readiness Report",
+  "report_script": null,
+  "report_type": "Query Report",
+  "roles": [
+   {
+    "parent": "Event Readiness Report",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "System Manager"
+   },
+   {
+    "parent": "Event Readiness Report",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Event Readiness Role"
+   }
+  ],
+  "timeout": 0
+ }
+]
