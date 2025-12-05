@@ -6,50 +6,46 @@ app_email = "me@aneeshbharath.com"
 app_license = "mit"
 
 fixtures = [
-    # Custom fields required by the system
+    # Custom fields on core doctypes only
     {
         "doctype": "Custom Field",
         "filters": [
-            ["name", "in", [
-                # User fields
-                "User-sector",
-                "User-is_sector_lead",
-
-                # Event Task fields
-                "Event Task-sector",
-                "Event Task-incharge",
-
-                # Event Readiness fields (if any custom)
-                # add only if created
-            ]]
+            ["dt", "in", ["User"]]   # ONLY core doctypes
         ]
     },
 
-    # Custom Role
+    # Custom role
     {
         "doctype": "Role",
         "filters": [["name", "=", "Event Readiness Role"]]
     },
 
-    # Permissions for the role
+    # Permissions associated with the custom role
     {
         "doctype": "DocPerm",
         "filters": [["role", "=", "Event Readiness Role"]]
     },
 
-    # Workspace
+    # The workspace UI block
     {
         "doctype": "Workspace",
         "filters": [["name", "=", "Event Readiness Dashboard"]]
     },
 
-    # UI Script
+    # Client script rendering the dashboard UI
     {
         "doctype": "Client Script",
         "filters": [["name", "=", "Event UI Customization"]]
+    },
+
+    # Property setters for modifications on User doctype only
+    {
+        "doctype": "Property Setter",
+        "filters": [
+            ["doc_type", "=", "User"]   # Only core doctypes require this
+        ]
     }
 ]
-
 doc_events = {
     "Event Readiness": {
         "after_insert": "psn_custom_rdb_app.psn_readiness_dashboard.event_logic.create_default_event_tasks"
