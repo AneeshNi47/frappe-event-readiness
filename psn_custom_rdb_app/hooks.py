@@ -5,44 +5,36 @@ app_description = "PSN Events Readiness Dashboard"
 app_email = "me@aneeshbharath.com"
 app_license = "mit"
 
-fixtures = [
 
-    # Custom fields like sector, is_sector_lead etc.
+fixtures = [
     {
         "doctype": "Custom Field",
         "filters": [
-            ["dt", "in", ["User", "Event Task"]]
+            ["dt", "in", ["User", "Event Task", "Event Readiness"]]
         ]
     },
-
-    # Custom Role for this system
     {
         "doctype": "Role",
         "filters": [["name", "=", "Event Readiness Role"]]
     },
-
-    # Permissions assigned to this role
     {
         "doctype": "DocPerm",
         "filters": [["role", "=", "Event Readiness Role"]]
     },
-
-    # Workspace menu
     {
         "doctype": "Workspace",
         "filters": [["name", "=", "Event Readiness Dashboard"]]
     },
-
-    # UI custom script
     {
         "doctype": "Client Script",
         "filters": [["name", "=", "Event UI Customization"]]
     },
-
-    # If you modified core doctypes via Customize Form
     {
         "doctype": "Property Setter",
-        "filters": [["doc_type", "in", ["Event Task", "User", "Event Readiness"]]]
+        "filters": [
+            ["doc_type", "in", ["Event Task", "User", "Event Readiness"]],
+            ["property", "in", ["mandatory", "reqd", "options", "hidden"]]
+        ]
     }
 ]
 
