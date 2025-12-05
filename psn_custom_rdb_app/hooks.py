@@ -25,10 +25,6 @@ fixtures = [
         ]
     },
     {
-        "doctype": "Role Permission for Page and Report",
-        "filters": [["role", "in", ["Event Readiness Role"]]]
-    },
-    {
         "doctype": "DocPerm",
         "filters": [["parent", "=", "Event Task"]]
     }
