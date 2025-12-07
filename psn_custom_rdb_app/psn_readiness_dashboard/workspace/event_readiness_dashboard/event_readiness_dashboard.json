@@ -9,7 +9,7 @@
    "label": "Events Chart"
   }
  ],
- "content": "[{\"id\":\"bzg6Xqtus_\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Event Readiness Dashboard</span>\",\"col\":6}},{\"id\":\"XyyrqOFdKp\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Create Event\",\"col\":6}},{\"id\":\"GV8zdp3ccJ\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Events Chart\",\"col\":6}},{\"id\":\"XtN2EiPm6E\",\"type\":\"chart\",\"data\":{\"chart_name\":\"All Tasks\",\"col\":6}},{\"id\":\"ap7TiOWxEm\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"All Tasks\",\"col\":4}},{\"id\":\"2KwdItWR3O\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Calendar View\",\"col\":12}},{\"id\":\"6YRCN9e-9Y\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Members\",\"col\":4}},{\"id\":\"AsGj9BqJFj\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Events\",\"col\":4}},{\"id\":\"4q1wz5C5NY\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Events\",\"col\":4}},{\"id\":\"MSb3auaYBR\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Active Events\",\"col\":12}}]",
+ "content": "[{\"id\":\"GV8zdp3ccJ\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Events Chart\",\"col\":6}},{\"id\":\"XtN2EiPm6E\",\"type\":\"chart\",\"data\":{\"chart_name\":\"All Tasks\",\"col\":6}},{\"id\":\"XyyrqOFdKp\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Create Event\",\"col\":12}},{\"id\":\"2KwdItWR3O\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Calendar View\",\"col\":12}},{\"id\":\"6YRCN9e-9Y\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Members\",\"col\":4}},{\"id\":\"AsGj9BqJFj\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Events\",\"col\":4}},{\"id\":\"MSb3auaYBR\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Active Events\",\"col\":12}}]",
  "creation": "2025-11-29 15:08:29.928627",
  "custom_blocks": [
   {
@@ -31,15 +31,11 @@
  "is_hidden": 0,
  "label": "Event Readiness Dashboard",
  "links": [],
- "modified": "2025-12-05 15:13:15.401579",
+ "modified": "2025-12-06 21:50:13.481469",
  "modified_by": "Administrator",
  "module": "PSN Readiness Dashboard",
  "name": "Event Readiness Dashboard",
  "number_cards": [
-  {
-   "label": "All Tasks",
-   "number_card_name": "All Tasks"
-  },
   {
    "label": "Members",
    "number_card_name": "Sector Members"
@@ -65,15 +61,6 @@
   }
  ],
  "sequence_id": 1.0,
- "shortcuts": [
-  {
-   "color": "Grey",
-   "doc_view": "List",
-   "label": "Events",
-   "link_to": "Event Readiness",
-   "stats_filter": "[]",
-   "type": "DocType"
-  }
- ],
+ "shortcuts": [],
  "title": "Event Readiness Dashboard"
 }
