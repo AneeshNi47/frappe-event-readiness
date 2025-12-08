@@ -190,14 +190,13 @@ def update_task_incharge(task_name, user):
 
 
 @frappe.whitelist()
-def update_event_task_status(l2_task_name, status):
+def update_event_task_status(l2_task_name, status, delay_reason=None):
     task = frappe.get_doc("Event Task", l2_task_name)
     user = frappe.session.user
 
+    # --- PERMISSION LOGIC (unchanged) ---
     if is_admin():
-        # Admin bypass
-        pass
-
+        pass  # Admin bypass
     else:
         sector = get_user_sector()
 
@@ -205,7 +204,7 @@ def update_event_task_status(l2_task_name, status):
         if task.sector != sector:
             frappe.throw("You cannot update tasks outside your sector")
 
-        # lead can update all tasks in sector
+        # sector lead can update all tasks in sector
         if is_sector_lead():
             pass
 
@@ -213,9 +212,25 @@ def update_event_task_status(l2_task_name, status):
         elif task.incharge != user:
             frappe.throw("You can only update tasks assigned to you")
 
+    # --- STATUS UPDATE ---
     task.status = status
+
+    # --- DELAY LOGIC (NEW) ---
+    if status == "Delayed":
+        if not delay_reason:
+            frappe.throw(
+                "Delay reason is required when marking task as Delayed")
+
+        task.delay_reason = delay_reason
+
+    else:
+        # Optional: clear previous delay reason if status changes
+        task.delay_reason = None
+
+    # Save task & update stats
     task.save()
     update_event_task_stats(task.event)
+
     frappe.db.commit()
 
 
@@ -293,3 +308,20 @@ def create_sector_user(sector, full_name, email, is_lead=0):
 
     frappe.db.commit()
     return user.name
+
+
+@frappe.whitelist()
+def get_task_activity(task_name):
+    """Fetch activity for an Event Task (comments / updates / discussions)"""
+    return frappe.get_all(
+        "Communication",
+        filters={
+            "reference_doctype": "Event Task",
+            "reference_name": task_name
+        },
+        fields=[
+            "communication_type", "sender", "subject",
+            "content", "creation", "modified_by"
+        ],
+        order_by="creation desc"
+    )
