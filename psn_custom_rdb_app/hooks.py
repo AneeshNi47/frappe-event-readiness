@@ -27,6 +27,10 @@ fixtures = [
         "filters": [["name", "=", "Event Readiness Dashboard"]]
     },
     {
+        "doctype": "Calendar View",
+        "filters": [["reference_doctype", "=", "Event Readiness"]]
+    },
+    {
         "doctype": "Client Script",
         "filters": [
             ["name", "in", [

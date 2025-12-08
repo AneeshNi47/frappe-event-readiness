@@ -1,0 +1,24 @@
+[
+ {
+  "all_day": 0,
+  "docstatus": 0,
+  "doctype": "Calendar View",
+  "end_date_field": "custom_event_end_date",
+  "modified": "2025-12-06 21:35:34.287050",
+  "name": "Event Readiness Calendar View",
+  "reference_doctype": "Event Readiness",
+  "start_date_field": "event_date",
+  "subject_field": "event_name"
+ },
+ {
+  "all_day": 0,
+  "docstatus": 0,
+  "doctype": "Calendar View",
+  "end_date_field": "custom_event_end_date",
+  "modified": "2025-12-08 15:37:21.480322",
+  "name": "default",
+  "reference_doctype": "Event Readiness",
+  "start_date_field": "event_date",
+  "subject_field": "event_name"
+ }
+]
