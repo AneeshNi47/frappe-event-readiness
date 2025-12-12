@@ -1,15 +1,15 @@
 {
  "charts": [
   {
-   "chart_name": "Event Tasks by Status",
-   "label": "All Tasks"
+   "chart_name": "Event Readiness Chart",
+   "label": "Events Readiness"
   },
   {
-   "chart_name": "Event Readiness Chart",
-   "label": "Events Chart"
+   "chart_name": "Event Tasks by Status",
+   "label": "Tasks Status"
   }
  ],
- "content": "[{\"id\":\"GV8zdp3ccJ\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Events Chart\",\"col\":6}},{\"id\":\"XtN2EiPm6E\",\"type\":\"chart\",\"data\":{\"chart_name\":\"All Tasks\",\"col\":6}},{\"id\":\"XyyrqOFdKp\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Create Event\",\"col\":12}},{\"id\":\"2KwdItWR3O\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Calendar View\",\"col\":12}},{\"id\":\"6YRCN9e-9Y\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Members\",\"col\":4}},{\"id\":\"AsGj9BqJFj\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Events\",\"col\":4}},{\"id\":\"MSb3auaYBR\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Active Events\",\"col\":12}}]",
+ "content": "[{\"id\":\"g-LTQ3jZ31\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Create Event\",\"col\":12}},{\"id\":\"GtXmS6KGnk\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Events Readiness\",\"col\":6}},{\"id\":\"7nrGOAsaQv\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Tasks Status\",\"col\":6}},{\"id\":\"2KwdItWR3O\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Calendar View\",\"col\":12}}]",
  "creation": "2025-11-29 15:08:29.928627",
  "custom_blocks": [
   {
@@ -31,30 +31,15 @@
  "is_hidden": 0,
  "label": "Event Readiness Dashboard",
  "links": [],
- "modified": "2025-12-06 21:50:13.481469",
+ "modified": "2025-12-09 16:21:48.907616",
  "modified_by": "Administrator",
  "module": "PSN Readiness Dashboard",
  "name": "Event Readiness Dashboard",
- "number_cards": [
-  {
-   "label": "Members",
-   "number_card_name": "Sector Members"
-  },
-  {
-   "label": "Total Events",
-   "number_card_name": "Total Events"
-  }
- ],
+ "number_cards": [],
  "owner": "Administrator",
  "parent_page": "",
  "public": 1,
- "quick_lists": [
-  {
-   "document_type": "Event Readiness",
-   "label": "Active Events",
-   "quick_list_filter": "[]"
-  }
- ],
+ "quick_lists": [],
  "roles": [
   {
    "role": "Event Readiness Role"

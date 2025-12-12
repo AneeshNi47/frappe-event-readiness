@@ -1,46 +1,48 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "hash",
- "creation": "2025-11-29 13:22:43.416510",
+ "creation": "2025-12-09 18:36:30.384845",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "user",
-  "is_sector_lead",
-  "role"
+  "sector",
+  "row_id",
+  "is_sector_lead"
  ],
  "fields": [
   {
-   "fieldname": "user",
+   "columns": 1,
+   "fieldname": "sector",
    "fieldtype": "Link",
    "in_list_view": 1,
-   "label": "User",
-   "options": "User",
+   "label": "Sector",
+   "options": "Sector",
    "reqd": 1
   },
   {
+   "columns": 1,
    "default": "0",
    "fieldname": "is_sector_lead",
    "fieldtype": "Check",
+   "in_list_view": 1,
    "label": "Is Sector Lead"
   },
   {
-   "fieldname": "role",
+   "fieldname": "row_id",
    "fieldtype": "Data",
-   "label": "Role"
+   "hidden": 1,
+   "label": "RowID"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-12-10 18:30:31.496824",
+ "modified": "2025-12-09 18:57:30.992138",
  "modified_by": "Administrator",
  "module": "PSN Readiness Dashboard",
- "name": "Sector Member",
- "naming_rule": "Random",
+ "name": "User Sector Assignment",
  "owner": "Administrator",
  "permissions": [],
  "row_format": "Dynamic",
