@@ -1,5 +1,7 @@
 import frappe
 
+frappe.flags.ignore_csrf = True
+
 
 @frappe.whitelist()
 def get_events_for_user():

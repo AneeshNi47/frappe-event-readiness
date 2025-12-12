@@ -4,6 +4,8 @@
 import frappe
 from frappe.model.document import Document
 
+frappe.flags.ignore_csrf = True
+
 
 class EventTask(Document):
     pass

@@ -1,5 +1,7 @@
 import frappe
 
+frappe.flags.ignore_csrf = True
+
 
 def get_user_sector(user):
     return frappe.db.get_value("User", user, "sector")

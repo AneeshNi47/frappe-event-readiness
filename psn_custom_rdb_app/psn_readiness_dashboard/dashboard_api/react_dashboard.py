@@ -1,5 +1,7 @@
 import frappe
 
+frappe.flags.ignore_csrf = True
+
 
 @frappe.whitelist()
 def get_admin_dashboard_summary():

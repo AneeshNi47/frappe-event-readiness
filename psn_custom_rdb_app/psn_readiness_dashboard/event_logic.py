@@ -3,6 +3,7 @@ import json
 import frappe
 from frappe.utils import add_days, cint, nowdate
 
+frappe.flags.ignore_csrf = True
 # ======================================================
 #  HELPER FUNCTIONS FOR PERMISSIONS
 # ======================================================

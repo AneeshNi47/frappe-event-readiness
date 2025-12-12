@@ -1,9 +1,11 @@
 # Copyright (c) 2025, PSN and contributors
 # For license information, please see license.txt
 
-from frappe.utils.background_jobs import enqueue
 import frappe
 from frappe.model.document import Document
+from frappe.utils.background_jobs import enqueue
+
+frappe.flags.ignore_csrf = True
 
 
 class UserSectorKPI(Document):
