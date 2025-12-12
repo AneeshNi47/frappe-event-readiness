@@ -20,6 +20,22 @@ fixtures = [
         "filters": [["dt", "=", "Event Readiness"]]
     },
     {
+        "doctype": "DocType",
+        "filters": [["name", "=", "User Sector KPI"]]
+    },
+    {
+        "doctype": "Custom Field",
+        "filters": [["dt", "=", "User Sector KPI"]]
+    },
+    {
+        "doctype": "DocType",
+        "filters": [["name", "=", "User Sector Assignment"]]
+    },
+    {
+        "doctype": "Custom Field",
+        "filters": [["dt", "=", "User Sector Assignment"]]
+    },
+    {
         "doctype": "Role",
         "filters": [["name", "=", "Event Readiness Role"]]
     },
