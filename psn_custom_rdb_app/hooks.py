@@ -5,6 +5,11 @@ app_description = "PSN Events Readiness Dashboard"
 app_email = "me@aneeshbharath.com"
 app_license = "mit"
 
+csrf_exempt = [
+    "frappe.integrations.oauth2.get_token",
+    "frappe.integrations.oauth2.authorize"
+]
+
 fixtures = [
     {
         "doctype": "Custom Field",
