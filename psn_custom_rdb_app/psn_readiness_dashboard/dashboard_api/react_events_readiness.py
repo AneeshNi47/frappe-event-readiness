@@ -1,10 +1,22 @@
 import frappe
+from frappe import enqueue
+from frappe.utils import add_days, getdate, nowdate
 
 frappe.flags.ignore_csrf = True
 
+ALLOWED_SORT_FIELDS = {
+    "event_date": "event_date",
+    "end_date": "custom_event_end_date",
+    "created_on": "creation",
+    "event_name": "event_name",
+    "readiness": "event_readiness",
+}
+
 
 @frappe.whitelist()
-def get_events_for_user():
+def get_events_for_user(
+        sort_by="event_date",
+        sort_order="asc"):
     user = frappe.session.user
 
     # -------------------------
@@ -27,7 +39,7 @@ def get_events_for_user():
     # -------------------------
     # 2️⃣ Administrator → can see ALL events
     # -------------------------
-    if user == "Administrator":
+    if "System Manager" in frappe.get_roles(user):
         allowed_event_names = None  # None = fetch all
     else:
         # -------------------------
@@ -63,9 +75,11 @@ def get_events_for_user():
 
         event_filters["name"] = ["in", allowed_event_names]
 
-    # -------------------------
-    # 5️⃣ Fetch Events
-    # -------------------------
+    sort_order = sort_order.lower()
+    if sort_order not in ("asc", "desc"):
+        sort_order = "asc"
+    order_field = ALLOWED_SORT_FIELDS.get(sort_by, "event_date")
+
     events = frappe.get_all(
         "Event Readiness",
         filters=event_filters,
@@ -78,9 +92,12 @@ def get_events_for_user():
             "total_tasks",
             "completed_tasks",
             "delayed_tasks",
-            "event_readiness"
+            "event_readiness",
+            "custom_event_sponsor",
+            "creation",
+            "owner",
         ],
-        order_by="event_date asc"
+        order_by=f"{order_field} {sort_order}"
     )
 
     return {
@@ -192,33 +209,65 @@ def get_event_details(event_name):
 
 
 @frappe.whitelist()
-def update_event_task_status(task_name, status, delay_reason=None):
+def create_event(
+    event_name,
+    event_date,
+    custom_event_end_date,
+    custom_event_sponsor,
+    event_description,
+    use_default_tasks=1
+):
     """
-    React wrapper for updating task status.
+    Create a new Event Readiness record
+    Called from React application
     """
-    from psn_custom_rdb_app.psn_readiness_dashboard.event_logic import \
-        update_event_task_status as base_update
 
-    return base_update(task_name, status, delay_reason)
+    user = frappe.session.user
 
+    # -------------------------
+    # 1️⃣ Permission Check
+    # -------------------------
+    if not frappe.has_permission("Event Readiness", "create", user=user):
+        frappe.throw(
+            "You do not have permission to create events",
+            frappe.PermissionError
+        )
 
-@frappe.whitelist()
-def update_task_incharge(task_name, user):
-    """
-    Assign task to a different user.
-    """
-    from psn_custom_rdb_app.psn_readiness_dashboard.event_logic import \
-        update_task_incharge as base_update
+    # -------------------------
+    # 2️⃣ Date Validation
+    # -------------------------
+    today = getdate(nowdate())
+    min_start_date = add_days(today, 1)
 
-    return base_update(task_name, user)
+    start_date = getdate(event_date)
+    end_date = getdate(custom_event_end_date)
 
+    if start_date < min_start_date:
+        frappe.throw("Event Start Date must be at least 1 day after today")
 
-@frappe.whitelist()
-def get_task_activity(task_name):
-    """
-    Get comment/activity log for React UI.
-    """
-    from psn_custom_rdb_app.psn_readiness_dashboard.event_logic import \
-        get_task_activity
+    if end_date <= start_date:
+        frappe.throw("Event End Date must be greater than Event Start Date")
 
-    return get_task_activity(task_name)
+    # -------------------------
+    # 3️⃣ Create Event Document
+    # -------------------------
+    event = frappe.get_doc({
+        "doctype": "Event Readiness",
+        "event_name": event_name,
+        "event_date": start_date,
+        "custom_event_end_date": end_date,
+        "event_owner": user,
+        "custom_event_sponsor": custom_event_sponsor,
+        "event_description": event_description,
+        "use_default_tasks": 1 if int(use_default_tasks) else 0
+    })
+
+    event.insert(ignore_permissions=False)
+    if use_default_tasks:
+        event.db_set("custom_tasks_generation_status", "Pending")
+    frappe.db.commit()
+
+    return {
+        "message": "Event created successfully",
+        "event_name": event.name
+    }

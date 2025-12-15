@@ -32,7 +32,7 @@
     "parent": "Event Readiness Report",
     "parentfield": "roles",
     "parenttype": "Report",
-    "role": "Event Readiness Role"
+    "role": "Event Readiness Admin"
    }
   ],
   "timeout": 0

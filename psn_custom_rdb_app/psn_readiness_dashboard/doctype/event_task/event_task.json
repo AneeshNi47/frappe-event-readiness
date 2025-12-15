@@ -7,18 +7,19 @@
  "engine": "InnoDB",
  "field_order": [
   "event",
+  "sector",
+  "l1_indicator",
   "l2_task_name",
   "status",
   "due_date",
+  "updated_on",
   "incharge",
-  "weightage",
-  "delay_reason",
   "column_break_sced",
-  "sector",
   "sector_lead",
   "task_description",
   "progress",
-  "updated_on"
+  "weightage",
+  "delay_reason"
  ],
  "fields": [
   {
@@ -29,8 +30,8 @@
   },
   {
    "fieldname": "l2_task_name",
-   "fieldtype": "Data",
-   "label": "L2 Task Name"
+   "fieldtype": "Small Text",
+   "label": "L2 Indicator"
   },
   {
    "default": "Pending",
@@ -91,12 +92,17 @@
    "fieldname": "updated_on",
    "fieldtype": "Datetime",
    "label": "Updated On"
+  },
+  {
+   "fieldname": "l1_indicator",
+   "fieldtype": "Data",
+   "label": "L1 Indicator"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-11-29 14:35:36.564349",
+ "modified": "2025-12-15 11:47:32.351711",
  "modified_by": "Administrator",
  "module": "PSN Readiness Dashboard",
  "name": "Event Task",

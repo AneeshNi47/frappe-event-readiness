@@ -1,4 +1,7 @@
+import csv
+import io
 import json
+import os
 
 import frappe
 from frappe.utils import add_days, cint, nowdate
@@ -103,58 +106,23 @@ def is_sector_lead():
     return frappe.db.get_value("User", frappe.session.user, "is_sector_lead") == 1
 
 
-# ======================================================
-#  AUTO CREATE DEFAULT TASKS
-# ======================================================
-
-def create_default_event_tasks(doc, method=None):
+def enqueue_default_event_tasks(doc, method=None):
+    """
+    Enqueue background job for default task creation
+    Triggered from Frappe UI event creation
+    """
     if not doc.use_default_tasks:
         return
-
-    templates = frappe.get_all(
-        "Task Template",
-        fields=["sector", "task_name", "description", "duration_days"]
+    doc.db_set("custom_tasks_generation_status", "In Progress")
+    frappe.enqueue(
+        "psn_custom_rdb_app.psn_readiness_dashboard.event_logic.create_default_event_tasks_bg",
+        queue="long",
+        event_id=doc.name,
+        timeout=1200,
+        enqueue_after_commit=True
     )
+    doc.db_set("custom_tasks_generation_status", "Completed")
 
-    for tmpl in templates:
-
-        # avoid duplicates
-        if frappe.db.exists("Event Task", {
-            "event": doc.name,
-            "sector": tmpl.sector,
-            "l2_task_name": tmpl.task_name
-        }):
-            continue
-
-        # get sector lead
-        lead = frappe.db.get_value(
-            "Sector Member",
-            {"is_sector_lead": 1, "parent": tmpl.sector},
-            "user"
-        )
-
-        task = frappe.new_doc("Event Task")
-        task.event = doc.name
-        task.sector = tmpl.sector
-        task.sector_lead = lead
-        task.l2_task_name = tmpl.task_name
-        task.task_description = tmpl.description
-        task.status = "Pending"
-        task.weightage = 0
-        task.progress = 0
-
-        base_date = doc.event_date or nowdate()
-        task.due_date = add_days(base_date, tmpl.duration_days or 0)
-
-        task.insert(ignore_permissions=True)
-
-    update_event_task_stats(doc.name)
-    frappe.msgprint("Default tasks added.")
-
-
-# ======================================================
-#  UPDATE WEIGHTAGE & RECALCULATE READINESS
-# ======================================================
 
 def update_task_weightage(doc, method=None):
     weightage_map = {
@@ -228,14 +196,6 @@ def get_tasks_for_event(event_name):
     # 2️⃣ Build Base Filters
     # -------------------------
     filters = {"event": event_name}
-
-    if user != "Administrator":
-        if user_is_lead and user_sector_list:
-            # Sector lead sees tasks from ALL assigned sectors
-            filters["sector"] = ["in", user_sector_list]
-        else:
-            # Regular user sees only assigned tasks
-            filters["incharge"] = user
 
     # -------------------------
     # 3️⃣ Fetch Event Tasks
@@ -380,27 +340,51 @@ def get_event_dashboard_stats():
 
 @frappe.whitelist()
 def create_sector_user(full_name, email, sectors):
-    # sectors comes as JSON string from JS Dialog — convert safely
+    """
+    Create a new system user and assign:
+    - Sector Lead OR Sector Member (exclusive)
+    - Assign sectors
+    - Create User Sector KPI records
+    """
+
+    # -------------------------------------------------
+    # 0️⃣ Permission check
+    # -------------------------------------------------
+    if "Event Readiness Role" not in frappe.get_roles(frappe.session.user):
+        frappe.throw("You are not allowed to create users")
+
+    # sectors comes as JSON string from JS Dialog
     if isinstance(sectors, str):
         sectors = json.loads(sectors or "[]")
 
     if not sectors:
         frappe.throw("Please add at least one sector assignment")
 
-    # 1) Check if user already exists
+    # -------------------------------------------------
+    # 1️⃣ Check if user already exists
+    # -------------------------------------------------
     if frappe.db.exists("User", {"email": email}):
         frappe.throw(f"User with email {email} already exists")
 
-    # 2) Create User
+    # -------------------------------------------------
+    # 2️⃣ Decide role (EXCLUSIVE)
+    # -------------------------------------------------
+    is_sector_lead = any(cint(row.get("is_sector_lead")) for row in sectors)
+    role_to_assign = "Sector Lead" if is_sector_lead else "Sector Member"
+
+    # -------------------------------------------------
+    # 3️⃣ Create User
+    # -------------------------------------------------
     user = frappe.new_doc("User")
     user.first_name = full_name
     user.email = email
     user.user_type = "System User"
     user.send_welcome_email = 0
     user.username = email.split("@")[0]
+    user.enabled = 1
 
-    # Add required user role
-    user.append("roles", {"role": "Event Readiness Role"})
+    # Assign ONLY ONE functional role
+    user.append("roles", {"role": role_to_assign})
 
     # If User Doctype still has mandatory "sector", set from first row
     first_sector = sectors[0].get("sector")
@@ -409,7 +393,9 @@ def create_sector_user(full_name, email, sectors):
 
     user.insert(ignore_permissions=True)
 
-    # 3) Assign user to each sector + ensure KPI creation
+    # -------------------------------------------------
+    # 4️⃣ Assign user to sectors + update lead flag
+    # -------------------------------------------------
     for row in sectors:
         sector_name = row.get("sector")
         is_lead = cint(row.get("is_sector_lead"))
@@ -419,7 +405,6 @@ def create_sector_user(full_name, email, sectors):
 
         sec_doc = frappe.get_doc("Sector", sector_name)
 
-        # Check if already exists in members
         existing_member = next(
             (m for m in sec_doc.members if m.user == user.name),
             None
@@ -435,7 +420,9 @@ def create_sector_user(full_name, email, sectors):
 
         sec_doc.save(ignore_permissions=True)
 
-        # Ensure KPI exists
+        # -------------------------------------------------
+        # 5️⃣ Ensure User Sector KPI exists
+        # -------------------------------------------------
         if not frappe.db.exists("User Sector KPI", {
             "user": user.name,
             "sector": sector_name
@@ -452,7 +439,12 @@ def create_sector_user(full_name, email, sectors):
             }).insert(ignore_permissions=True)
 
     frappe.db.commit()
-    return user.name
+
+    return {
+        "message": "User created successfully",
+        "user": user.name,
+        "role": role_to_assign
+    }
 
 
 @frappe.whitelist()
@@ -494,3 +486,168 @@ def sync_user_kpi():
 
     frappe.db.commit()
     return "OK"
+
+
+def create_default_event_tasks_bg(event_id):
+    """
+    Background job to create default tasks for an event
+    """
+    if not frappe.db.exists("Event Readiness", event_id):
+        frappe.log_error(f"Event {event_id} not found", "BG Task")
+        return
+
+    doc = frappe.get_doc("Event Readiness", event_id)
+    if not doc.use_default_tasks:
+        return
+
+    templates = frappe.get_all(
+        "Task Template",
+        fields=["sector", "task_name", "description", "duration_days"]
+    )
+
+    for tmpl in templates:
+        if frappe.db.exists(
+            "Event Task",
+            {
+                "event": doc.name,
+                "sector": tmpl.sector,
+                "l2_task_name": tmpl.task_name
+            }
+        ):
+            continue
+
+        lead = frappe.db.get_value(
+            "Sector Member",
+            {"is_sector_lead": 1, "parent": tmpl.sector},
+            "user"
+        )
+
+        task = frappe.new_doc("Event Task")
+        task.event = doc.name
+        task.sector = tmpl.sector
+        task.sector_lead = lead
+        task.l2_task_name = tmpl.task_name
+        task.task_description = tmpl.description
+        task.status = "Pending"
+        task.weightage = 0
+        task.progress = 0
+
+        base_date = doc.event_date or nowdate()
+        task.due_date = add_days(base_date, tmpl.duration_days or 0)
+
+        task.insert(ignore_permissions=True)
+
+    update_event_task_stats(doc.name)
+
+
+@frappe.whitelist()
+def import_task_templates(csv_file):
+    """
+    Custom importer for Task Template (Frappe v15 safe)
+
+    csv_file:
+      - file_url from Attach field
+      - Example: /private/files/Task Template - Task Template.csv
+    """
+
+    # -------------------------------------------------
+    # 1️⃣ Validate input
+    # -------------------------------------------------
+    if not csv_file:
+        frappe.throw("CSV file is required")
+
+    # -------------------------------------------------
+    # 2️⃣ Resolve absolute file path (v15 SAFE)
+    # -------------------------------------------------
+    # csv_file already contains /private/files/...
+    site_path = frappe.get_site_path()
+    relative_path = csv_file.lstrip("/")
+    file_path = os.path.join(site_path, relative_path)
+
+    if not os.path.exists(file_path):
+        frappe.throw(f"File not found on disk: {file_path}")
+
+    # -------------------------------------------------
+    # 3️⃣ Read CSV file
+    # -------------------------------------------------
+    created = 0
+    skipped = 0
+    errors = []
+
+    with open(file_path, "r", encoding="utf-8-sig") as f:
+        reader = csv.DictReader(f)
+
+        # -------------------------------------------------
+        # 4️⃣ Process rows
+        # -------------------------------------------------
+        for row_no, row in enumerate(reader, start=2):
+            try:
+                # ---- CSV fields (AS PER YOUR SYSTEM)
+                template_name = (row.get("Template Name") or "").strip()
+                sector_label = (row.get("Sector") or "").strip()
+                duration_days = row.get("Duration Days")
+                task_name = (row.get("L2 Task Name") or "").strip()
+                description = (row.get("Description") or "").strip()
+
+                if not sector_label or not task_name:
+                    raise Exception("Missing Sector or L2 Task Name")
+
+                # -------------------------------------------------
+                # Ensure Sector exists
+                # -------------------------------------------------
+                sector = frappe.db.get_value(
+                    "Sector",
+                    {"sector_name": sector_label},
+                    "name"
+                )
+
+                if not sector:
+                    sector_doc = frappe.get_doc({
+                        "doctype": "Sector",
+                        "sector_name": sector_label
+                    })
+                    sector_doc.insert(ignore_permissions=True)
+                    sector = sector_doc.name
+
+                # -------------------------------------------------
+                # Avoid duplicate Task Templates
+                # -------------------------------------------------
+                if frappe.db.exists("Task Template", {
+                    "template_name": template_name,
+                    "sector": sector,
+                    "task_name": task_name,
+                    "duration_days": int(duration_days or 0)
+                }):
+                    skipped += 1
+                    continue
+
+                # -------------------------------------------------
+                # Create Task Template
+                # -------------------------------------------------
+                task = frappe.get_doc({
+                    "doctype": "Task Template",
+                    "template_name": template_name,
+                    "sector": sector,
+                    "task_name": task_name,
+                    "description": description,
+                    "duration_days": int(duration_days or 0)
+                })
+
+                task.insert(ignore_permissions=True)
+                created += 1
+
+            except Exception as e:
+                errors.append({
+                    "row": row_no,
+                    "error": str(e),
+                    "data": row
+                })
+
+    # -------------------------------------------------
+    # 5️⃣ Return summary
+    # -------------------------------------------------
+    return {
+        "created": created,
+        "skipped": skipped,
+        "errors": errors
+    }

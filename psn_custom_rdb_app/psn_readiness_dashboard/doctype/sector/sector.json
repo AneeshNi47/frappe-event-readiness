@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "format:{sector_name} - {sector_lead}",
+ "autoname": "format:{sector_name}",
  "creation": "2025-11-29 13:20:17.220029",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -30,8 +30,7 @@
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Sector Lead",
-   "options": "User",
-   "reqd": 1
+   "options": "User"
   },
   {
    "fieldname": "members_section",
@@ -48,7 +47,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-11-29 14:37:48.807913",
+ "modified": "2025-12-15 11:55:10.521745",
  "modified_by": "Administrator",
  "module": "PSN Readiness Dashboard",
  "name": "Sector",

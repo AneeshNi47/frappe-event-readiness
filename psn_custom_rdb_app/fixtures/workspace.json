@@ -79,7 +79,7 @@
     "parent": "Event Readiness Dashboard",
     "parentfield": "roles",
     "parenttype": "Workspace",
-    "role": "Event Readiness Role"
+    "role": "Event Readiness Admin"
    }
   ],
   "sequence_id": 1.0,

@@ -12,86 +12,89 @@ csrf_exempt = [
 
 fixtures = [
     {
-        "doctype": "Custom Field",
-        "filters": [["dt", "=", "Event Task"]]
+        "dt": "Custom Field",
+        "filters": [
+            ["dt", "in", ["Event Task", "Event Readiness",
+                          "User Sector KPI", "User Sector Assignment"]]
+        ]
     },
     {
-        "doctype": "Custom Field",
-        "filters": [["dt", "=", "Event Readiness"]]
-    },
-    {
-        "doctype": "DocType",
+        "dt": "DocType",
         "filters": [["name", "=", "User Sector KPI"]]
     },
     {
-        "doctype": "Custom Field",
-        "filters": [["dt", "=", "User Sector KPI"]]
-    },
-    {
-        "doctype": "DocType",
+        "dt": "DocType",
         "filters": [["name", "=", "User Sector Assignment"]]
     },
     {
-        "doctype": "Custom Field",
-        "filters": [["dt", "=", "User Sector Assignment"]]
-    },
-    {
         "doctype": "Role",
-        "filters": [["name", "=", "Event Readiness Role"]]
+        "filters": [
+            ["name", "in", [
+                "Event Readiness Role",
+                "Sector Member",
+                "Sector Lead"
+            ]]
+        ]
     },
     {
         "doctype": "DocPerm",
-        "filters": [["role", "=", "Event Readiness Role"]]
+        "filters": [
+            ["role", "in", [
+                "Event Readiness Role",
+                "Sector Member",
+                "Sector Lead"
+            ]]
+        ]
     },
     {
-        "doctype": "Workspace",
+        "dt": "Workspace",
         "filters": [["name", "=", "Event Readiness Dashboard"]]
     },
     {
-        "doctype": "Calendar View",
+        "dt": "Calendar View",
         "filters": [["reference_doctype", "=", "Event Readiness"]]
     },
     {
-        "doctype": "Client Script",
-        "filters": [
-            ["name", "in", [
+        "dt": "Client Script",
+        "filters": [[
+            "name", "in", [
                 "Event UI Customization",
                 "Event Readiness Dashboard Script",
                 "Event Task UI Enhancements"
-            ]]
-        ]
+            ]
+        ]]
     },
     {
-        "doctype": "Custom HTML Block",
-        "filters": [
-            ["name", "in", [
+        "dt": "Custom HTML Block",
+        "filters": [[
+            "name", "in", [
                 "Create Event",
                 "Calendar View"
-            ]]
-        ]
+            ]
+        ]]
     },
     {
-        "doctype": "Report",
-        "filters": [
-            ["name", "in", [
+        "dt": "Report",
+        "filters": [[
+            "name", "in", [
                 "Event Readiness Report"
-            ]]
-        ]
+            ]
+        ]]
     },
     {
-        "doctype": "Report Filter",
-        "filters": [
-            ["parent", "in", [
+        "dt": "Report Filter",
+        "filters": [[
+            "parent", "in", [
                 "Event Readiness Summary",
                 "Event Task Details"
-            ]]
-        ]
+            ]
+        ]]
     }
 ]
 
 doc_events = {
     "Event Readiness": {
-        "after_insert": "psn_custom_rdb_app.psn_readiness_dashboard.event_logic.create_default_event_tasks"
+        "after_insert": "psn_custom_rdb_app.psn_readiness_dashboard.event_logic.enqueue_default_event_tasks"
     },
     "Event Task": {
         "on_update": "psn_custom_rdb_app.psn_readiness_dashboard.event_logic.update_task_weightage"

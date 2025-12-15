@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "format:{event}-{event_readiness}",
+ "autoname": "format:{event_name}",
  "creation": "2025-11-29 13:54:50.724046",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -23,6 +23,7 @@
    "fieldname": "event_name",
    "fieldtype": "Data",
    "in_list_view": 1,
+   "in_preview": 1,
    "label": "Event Name",
    "reqd": 1
   },
@@ -86,7 +87,7 @@
  "index_web_pages_for_search": 1,
  "is_calendar_and_gantt": 1,
  "links": [],
- "modified": "2025-12-03 20:45:04.737338",
+ "modified": "2025-12-15 12:29:06.176941",
  "modified_by": "Administrator",
  "module": "PSN Readiness Dashboard",
  "name": "Event Readiness",

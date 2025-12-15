@@ -15,9 +15,6 @@ def get_admin_dashboard_summary():
     total_events = frappe.db.count("Event Readiness")
     task_filters = {}
 
-    if user != "Administrator":
-        task_filters["incharge"] = user
-
     tasks = frappe.get_all(
         "Event Task",
         filters=task_filters,
