@@ -9,10 +9,10 @@
   "user_information_section",
   "user",
   "sector",
+  "custom_is_sector_lead",
   "kpi_statistics_section",
   "total_tasks",
   "completed_tasks",
-  "float_komy",
   "last_updated_on",
   "column_break_aewy",
   "pending_tasks",
@@ -59,10 +59,6 @@
    "non_negative": 1
   },
   {
-   "fieldname": "float_komy",
-   "fieldtype": "Float"
-  },
-  {
    "fieldname": "last_updated_on",
    "fieldtype": "Datetime",
    "label": "Last Updated"
@@ -87,12 +83,18 @@
    "fieldname": "kpi_score",
    "fieldtype": "Float",
    "label": "KPI Score"
+  },
+  {
+   "default": "0",
+   "fieldname": "custom_is_sector_lead",
+   "fieldtype": "Check",
+   "label": "Is Sector Lead"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-12-09 17:42:42.859975",
+ "modified": "2025-12-15 12:42:12.904162",
  "modified_by": "Administrator",
  "module": "PSN Readiness Dashboard",
  "name": "User Sector KPI",
