@@ -1,16 +1,16 @@
 {
  "charts": [
   {
-   "chart_name": "Event Readiness Chart",
-   "label": "Events Readiness"
+   "chart_name": "Event Tasks by Status",
+   "label": "All Tasks"
   },
   {
-   "chart_name": "Event Tasks by Status",
-   "label": "Tasks Status"
+   "chart_name": "Event Readiness Chart",
+   "label": "Events Chart"
   }
  ],
- "content": "[{\"id\":\"g-LTQ3jZ31\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Create Event\",\"col\":12}},{\"id\":\"GtXmS6KGnk\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Events Readiness\",\"col\":6}},{\"id\":\"7nrGOAsaQv\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Tasks Status\",\"col\":6}},{\"id\":\"2KwdItWR3O\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Calendar View\",\"col\":12}}]",
- "creation": "2025-11-29 15:08:29.928627",
+ "content": "[{\"id\":\"GV8zdp3ccJ\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Events Chart\",\"col\":6}},{\"id\":\"XtN2EiPm6E\",\"type\":\"chart\",\"data\":{\"chart_name\":\"All Tasks\",\"col\":6}},{\"id\":\"XyyrqOFdKp\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Create Event\",\"col\":12}},{\"id\":\"2KwdItWR3O\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Calendar View\",\"col\":12}},{\"id\":\"6YRCN9e-9Y\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Members\",\"col\":4}},{\"id\":\"AsGj9BqJFj\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Events\",\"col\":4}},{\"id\":\"MSb3auaYBR\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Active Events\",\"col\":12}}]",
+ "creation": "2025-12-15 11:19:47.364423",
  "custom_blocks": [
   {
    "custom_block_name": "Create Event",
@@ -31,18 +31,39 @@
  "is_hidden": 0,
  "label": "Event Readiness Dashboard",
  "links": [],
- "modified": "2025-12-09 16:21:48.907616",
+ "modified": "2025-12-19 16:22:29.654288",
  "modified_by": "Administrator",
  "module": "PSN Readiness Dashboard",
  "name": "Event Readiness Dashboard",
- "number_cards": [],
+ "number_cards": [
+  {
+   "label": "Members",
+   "number_card_name": "Sector Members"
+  },
+  {
+   "label": "Total Events",
+   "number_card_name": "Total Events"
+  }
+ ],
  "owner": "Administrator",
  "parent_page": "",
  "public": 1,
- "quick_lists": [],
+ "quick_lists": [
+  {
+   "document_type": "Event Readiness",
+   "label": "Active Events",
+   "quick_list_filter": "[]"
+  }
+ ],
  "roles": [
   {
-   "role": "Event Readiness Role"
+   "role": "Event Readiness Admin"
+  },
+  {
+   "role": "Sector Lead"
+  },
+  {
+   "role": "Sector Member"
   }
  ],
  "sequence_id": 1.0,

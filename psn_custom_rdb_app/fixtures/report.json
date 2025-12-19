@@ -11,7 +11,7 @@
   "javascript": null,
   "json": null,
   "letter_head": null,
-  "modified": "2025-12-04 18:59:32.933100",
+  "modified": "2025-12-19 16:24:24.704937",
   "module": "PSN Readiness Dashboard",
   "name": "Event Readiness Report",
   "prepared_report": 0,
@@ -33,6 +33,18 @@
     "parentfield": "roles",
     "parenttype": "Report",
     "role": "Event Readiness Admin"
+   },
+   {
+    "parent": "Event Readiness Report",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Sector Lead"
+   },
+   {
+    "parent": "Event Readiness Report",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Sector Member"
    }
   ],
   "timeout": 0

@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "format:{l1_indicator} - {sector}",
+ "autoname": "format:{template_name}",
  "creation": "2025-11-29 13:27:40.295086",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -21,6 +21,7 @@
    "in_list_view": 1,
    "label": "Template Name",
    "reqd": 1,
+   "unique": 1,
    "width": "10"
   },
   {
@@ -63,7 +64,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-12-15 11:40:48.840149",
+ "modified": "2025-12-15 15:57:52.997309",
  "modified_by": "Administrator",
  "module": "PSN Readiness Dashboard",
  "name": "Task Template",

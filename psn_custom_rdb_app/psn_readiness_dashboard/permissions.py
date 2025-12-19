@@ -3,25 +3,47 @@ import frappe
 frappe.flags.ignore_csrf = True
 
 
-def get_user_sector(user):
-    return frappe.db.get_value("User", user, "sector")
-
-
 @frappe.whitelist()
 def filter_tasks(query_filters=None):
     user = frappe.session.user
-    if user == "Administrator":
-        return query_filters or {}
+    roles = frappe.get_roles(user)
 
-    sector = get_user_sector(user)
-    is_lead = frappe.db.exists("Event Sector", {"sector_lead": user})
+    base_filter = query_filters.copy() if query_filters else {}
 
-    base_filter = query_filters or {}
+    # ------------------------------------------------
+    # 1️⃣ Admin → no restriction
+    # ------------------------------------------------
+    if user == "Administrator" or "Event Readiness Admin" in roles:
+        return base_filter
 
-    if is_lead:
-        base_filter["sector"] = sector
-    else:
-        base_filter["in_charge"] = user
-        base_filter["sector"] = sector
+    # ------------------------------------------------
+    # 2️⃣ Load user sector mappings
+    # ------------------------------------------------
+    kpi_entries = frappe.get_all(
+        "User Sector KPI",
+        filters={"user": user},
+        fields=["sector", "custom_is_sector_lead"]
+    )
+
+    if not kpi_entries:
+        # user has no access to any task
+        base_filter["name"] = "__invalid__"
+        return base_filter
+
+    user_sectors = [k.sector for k in kpi_entries]
+    is_sector_lead = any(k.custom_is_sector_lead for k in kpi_entries)
+
+    # ------------------------------------------------
+    # 3️⃣ Sector Lead → sector-based filter
+    # ------------------------------------------------
+    if is_sector_lead:
+        base_filter["sector"] = ["in", user_sectors]
+        return base_filter
+
+    # ------------------------------------------------
+    # 4️⃣ Sector Member → own tasks only
+    # ------------------------------------------------
+    base_filter["incharge"] = user
+    base_filter["sector"] = ["in", user_sectors]
 
     return base_filter

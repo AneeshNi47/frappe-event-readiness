@@ -9,6 +9,12 @@
   "sector_details_section",
   "sector_name",
   "sector_lead",
+  "description",
+  "column_break_giqv",
+  "sector_readiness",
+  "total_tasks",
+  "in_progress_tasks",
+  "completed_tasks",
   "members_section",
   "members"
  ],
@@ -42,12 +48,45 @@
    "fieldtype": "Table",
    "label": "Members",
    "options": "Sector Member"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Description"
+  },
+  {
+   "fieldname": "sector_readiness",
+   "fieldtype": "Float",
+   "label": "Sector Readiness",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_giqv",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "in_progress_tasks",
+   "fieldtype": "Int",
+   "label": "Total InProgress Task",
+   "read_only": 1
+  },
+  {
+   "fieldname": "completed_tasks",
+   "fieldtype": "Int",
+   "label": "Completed Tasks",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_tasks",
+   "fieldtype": "Int",
+   "label": "Total Tasks",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-12-15 11:55:10.521745",
+ "modified": "2025-12-16 16:36:32.446158",
  "modified_by": "Administrator",
  "module": "PSN Readiness Dashboard",
  "name": "Sector",

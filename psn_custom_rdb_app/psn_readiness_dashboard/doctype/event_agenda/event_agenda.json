@@ -1,0 +1,77 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-12-15 16:04:16.409054",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "event_details_section",
+  "event",
+  "event_description",
+  "column_break_ffhy",
+  "start_date",
+  "end_date"
+ ],
+ "fields": [
+  {
+   "fieldname": "event_details_section",
+   "fieldtype": "Section Break",
+   "label": "Event Details"
+  },
+  {
+   "fieldname": "event",
+   "fieldtype": "Link",
+   "label": "Event",
+   "options": "Event Readiness"
+  },
+  {
+   "fetch_from": "Event.event_description",
+   "fieldname": "event_description",
+   "fieldtype": "Data",
+   "label": "Event Description"
+  },
+  {
+   "fieldname": "column_break_ffhy",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "Event.event_date",
+   "fieldname": "start_date",
+   "fieldtype": "Data",
+   "label": "Start Date"
+  },
+  {
+   "fetch_from": "Event.custom_event_end_date",
+   "fieldname": "end_date",
+   "fieldtype": "Date",
+   "label": "End Date"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-12-15 16:15:14.982329",
+ "modified_by": "Administrator",
+ "module": "PSN Readiness Dashboard",
+ "name": "Event Agenda",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

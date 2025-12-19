@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "format:{event} {sector} - {l2_task_name} {status}",
+ "autoname": "format:{event}: {l1_indicator} {####} ",
  "creation": "2025-11-29 13:40:33.474201",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -102,7 +102,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-12-15 11:47:32.351711",
+ "modified": "2025-12-16 15:53:09.903986",
  "modified_by": "Administrator",
  "module": "PSN Readiness Dashboard",
  "name": "Event Task",

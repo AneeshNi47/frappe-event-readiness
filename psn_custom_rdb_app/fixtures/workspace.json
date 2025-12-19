@@ -42,7 +42,7 @@
   "is_hidden": 0,
   "label": "Event Readiness Dashboard",
   "links": [],
-  "modified": "2025-12-06 21:50:13.481469",
+  "modified": "2025-12-19 16:22:29.654288",
   "module": "PSN Readiness Dashboard",
   "name": "Event Readiness Dashboard",
   "number_cards": [
@@ -80,6 +80,18 @@
     "parentfield": "roles",
     "parenttype": "Workspace",
     "role": "Event Readiness Admin"
+   },
+   {
+    "parent": "Event Readiness Dashboard",
+    "parentfield": "roles",
+    "parenttype": "Workspace",
+    "role": "Sector Lead"
+   },
+   {
+    "parent": "Event Readiness Dashboard",
+    "parentfield": "roles",
+    "parenttype": "Workspace",
+    "role": "Sector Member"
    }
   ],
   "sequence_id": 1.0,

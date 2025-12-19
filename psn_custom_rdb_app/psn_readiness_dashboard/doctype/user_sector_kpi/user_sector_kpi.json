@@ -17,7 +17,10 @@
   "column_break_aewy",
   "pending_tasks",
   "delayed_tasks",
-  "kpi_score"
+  "kpi_score",
+  "in_progress_tasks",
+  "avg_response_hrs",
+  "on_time_percentage"
  ],
  "fields": [
   {
@@ -89,12 +92,27 @@
    "fieldname": "custom_is_sector_lead",
    "fieldtype": "Check",
    "label": "Is Sector Lead"
+  },
+  {
+   "fieldname": "in_progress_tasks",
+   "fieldtype": "Int",
+   "label": "In Progress"
+  },
+  {
+   "fieldname": "avg_response_hrs",
+   "fieldtype": "Float",
+   "label": "Average Response"
+  },
+  {
+   "fieldname": "on_time_percentage",
+   "fieldtype": "Float",
+   "label": "On Time Percentage"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-12-15 12:42:12.904162",
+ "modified": "2025-12-19 15:53:56.570337",
  "modified_by": "Administrator",
  "module": "PSN Readiness Dashboard",
  "name": "User Sector KPI",

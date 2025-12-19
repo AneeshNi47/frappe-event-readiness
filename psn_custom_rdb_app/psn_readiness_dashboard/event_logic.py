@@ -1,15 +1,15 @@
 import csv
-import io
 import json
+import math
 import os
 
 import frappe
-from frappe.utils import add_days, cint, nowdate
+from frappe.utils import add_days, cint, flt, nowdate
+
+from psn_custom_rdb_app.psn_readiness_dashboard.doctype.user_sector_kpi.user_sector_kpi import \
+    recalculate_kpi_for_user_sector
 
 frappe.flags.ignore_csrf = True
-# ======================================================
-#  HELPER FUNCTIONS FOR PERMISSIONS
-# ======================================================
 
 
 @frappe.whitelist()
@@ -98,10 +98,6 @@ def is_admin():
     return frappe.session.user == "Administrator"
 
 
-def get_user_sector():
-    return frappe.db.get_value("User", frappe.session.user, "sector")
-
-
 def is_sector_lead():
     return frappe.db.get_value("User", frappe.session.user, "is_sector_lead") == 1
 
@@ -138,10 +134,6 @@ def update_task_weightage(doc, method=None):
     update_event_task_stats(doc.event)
 
 
-# ======================================================
-#  RECALCULATE METRICS FOR EVENT READINESS
-# ======================================================
-
 def update_event_task_stats(event_name):
     tasks = frappe.get_all(
         "Event Task",
@@ -168,19 +160,18 @@ def update_event_task_stats(event_name):
     frappe.db.commit()
 
 
-# ======================================================
-#  FILTERED TASK LIST FOR CLIENT-SIDE UI
-# ======================================================
 @frappe.whitelist()
 def get_tasks_for_event(event_name):
     user = frappe.session.user
+    roles = frappe.get_roles(user)
+
+    is_admin = "Event Readiness Admin" in roles or user == "Administrator"
+    is_sector_lead = False
+    user_sectors = []
 
     # -------------------------
-    # 1️⃣ Fetch User Sector List
+    # Load sector mappings
     # -------------------------
-    user_sector_list = []
-    user_is_lead = False
-
     kpi_entries = frappe.get_all(
         "User Sector KPI",
         filters={"user": user},
@@ -188,64 +179,70 @@ def get_tasks_for_event(event_name):
     )
 
     if kpi_entries:
-        user_sector_list = [entry.sector for entry in kpi_entries]
-        user_is_lead = any(
-            entry.custom_is_sector_lead for entry in kpi_entries)
+        user_sectors = [k.sector for k in kpi_entries]
+        is_sector_lead = any(k.custom_is_sector_lead for k in kpi_entries)
 
     # -------------------------
-    # 2️⃣ Build Base Filters
+    # Build task filters
     # -------------------------
     filters = {"event": event_name}
 
+    if not is_admin:
+        # Sector Lead → sector-based visibility
+        if is_sector_lead and user_sectors:
+            filters["sector"] = ["in", user_sectors]
+
+        # Sector Member → only assigned tasks
+        else:
+            filters["incharge"] = user
+
     # -------------------------
-    # 3️⃣ Fetch Event Tasks
+    # Fetch tasks
     # -------------------------
     tasks = frappe.get_all(
         "Event Task",
         filters=filters,
         fields=[
-            "name", "l2_task_name", "sector", "status",
-            "incharge", "creation", "due_date", "progress"
+            "name",
+            "l2_task_name",
+            "sector",
+            "status",
+            "incharge",
+            "creation",
+            "due_date",
+            "progress"
         ],
         order_by="creation asc"
     )
 
     # -------------------------
-    # 4️⃣ Sector-wise User Map
-    # for ADMIN or SECTOR LEAD
+    # Sector → Users mapping (ONLY for admins & leads)
     # -------------------------
     sector_users = {}
 
-    if user == "Administrator" or user_is_lead:
+    if is_admin or is_sector_lead:
         relevant_sectors = list({t.sector for t in tasks if t.sector})
 
         if relevant_sectors:
             members = frappe.get_all(
-                "Sector Member",
-                filters={"parent": ["in", relevant_sectors]},
-                fields=["parent as sector", "user", "is_sector_lead"]
+                "User Sector KPI",
+                filters={"sector": ["in", relevant_sectors]},
+                fields=["sector", "user", "custom_is_sector_lead"]
             )
 
             for m in members:
                 sector_users.setdefault(m.sector, []).append({
                     "user": m.user,
-                    "is_lead": m.is_sector_lead
+                    "is_lead": m.custom_is_sector_lead
                 })
 
-    # -------------------------
-    # 5️⃣ Response
-    # -------------------------
-    print(user_sector_list)
     return {
         "tasks": tasks,
         "user": user,
-        "user_sector_list": user_sector_list,
-        "user_is_lead": user_is_lead,
+        "user_sector_list": user_sectors,
+        "user_is_lead": is_sector_lead,
         "sector_users": sector_users
     }
-# ======================================================
-#  UPDATE TASK STATUS (STRICT PERMISSIONS)
-# ======================================================
 
 
 @frappe.whitelist()
@@ -260,50 +257,43 @@ def update_task_incharge(task_name, user):
 def update_event_task_status(l2_task_name, status, delay_reason=None):
     task = frappe.get_doc("Event Task", l2_task_name)
     user = frappe.session.user
+    roles = frappe.get_roles(user)
+    if user == "Administrator" or "Event Readiness Admin" in roles:
+        pass
 
-    # --- PERMISSION LOGIC (unchanged) ---
-    if is_admin():
-        pass  # Admin bypass
     else:
-        sector = get_user_sector()
+        kpi_entries = frappe.get_all(
+            "User Sector KPI",
+            filters={"user": user},
+            fields=["sector", "custom_is_sector_lead"]
+        )
 
-        # user must belong to same sector
-        if task.sector != sector:
+        if not kpi_entries:
+            frappe.throw("You are not assigned to any sector")
+
+        user_sectors = [k.sector for k in kpi_entries]
+        is_sector_lead = any(k.custom_is_sector_lead for k in kpi_entries)
+        # Sector mismatch
+        if task.sector not in user_sectors:
             frappe.throw("You cannot update tasks outside your sector")
 
-        # sector lead can update all tasks in sector
-        if is_sector_lead():
-            pass
-
-        # members: only if assigned
-        elif task.incharge != user:
+        # Sector member can update ONLY their own tasks
+        if not is_sector_lead and task.incharge != user:
             frappe.throw("You can only update tasks assigned to you")
-
-    # --- STATUS UPDATE ---
     task.status = status
 
-    # --- DELAY LOGIC (NEW) ---
     if status == "Delayed":
         if not delay_reason:
-            frappe.throw(
-                "Delay reason is required when marking task as Delayed")
-
+            frappe.throw("Delay reason is required")
         task.delay_reason = delay_reason
-
     else:
-        # Optional: clear previous delay reason if status changes
         task.delay_reason = None
 
-    # Save task & update stats
     task.save()
     update_event_task_stats(task.event)
 
     frappe.db.commit()
 
-
-# ======================================================
-#  ADD TASK FROM POPUP MODAL
-# ======================================================
 
 @frappe.whitelist()
 def create_event_task_from_popup(event, l2_task_name, sector, incharge=None, due_date=None, task_description=None):
@@ -321,10 +311,6 @@ def create_event_task_from_popup(event, l2_task_name, sector, incharge=None, due
     return task.name
 
 
-# ======================================================
-#  EVENT READINESS DASHBOARD DATA
-# ======================================================
-
 @frappe.whitelist()
 def get_event_dashboard_stats():
     """Used by dashboard to show full event overview"""
@@ -335,46 +321,17 @@ def get_event_dashboard_stats():
         order_by="creation asc"
     )
 
-# psn_custom_rdb_app/psn_readiness_dashboard/event_logic.py
-
 
 @frappe.whitelist()
 def create_sector_user(full_name, email, sectors):
-    """
-    Create a new system user and assign:
-    - Sector Lead OR Sector Member (exclusive)
-    - Assign sectors
-    - Create User Sector KPI records
-    """
-
-    # -------------------------------------------------
-    # 0️⃣ Permission check
-    # -------------------------------------------------
-    if "Event Readiness Role" not in frappe.get_roles(frappe.session.user):
-        frappe.throw("You are not allowed to create users")
-
-    # sectors comes as JSON string from JS Dialog
     if isinstance(sectors, str):
         sectors = json.loads(sectors or "[]")
-
     if not sectors:
         frappe.throw("Please add at least one sector assignment")
-
-    # -------------------------------------------------
-    # 1️⃣ Check if user already exists
-    # -------------------------------------------------
     if frappe.db.exists("User", {"email": email}):
         frappe.throw(f"User with email {email} already exists")
-
-    # -------------------------------------------------
-    # 2️⃣ Decide role (EXCLUSIVE)
-    # -------------------------------------------------
     is_sector_lead = any(cint(row.get("is_sector_lead")) for row in sectors)
     role_to_assign = "Sector Lead" if is_sector_lead else "Sector Member"
-
-    # -------------------------------------------------
-    # 3️⃣ Create User
-    # -------------------------------------------------
     user = frappe.new_doc("User")
     user.first_name = full_name
     user.email = email
@@ -382,34 +339,21 @@ def create_sector_user(full_name, email, sectors):
     user.send_welcome_email = 0
     user.username = email.split("@")[0]
     user.enabled = 1
-
-    # Assign ONLY ONE functional role
     user.append("roles", {"role": role_to_assign})
-
-    # If User Doctype still has mandatory "sector", set from first row
     first_sector = sectors[0].get("sector")
     if frappe.db.has_column("User", "sector") and first_sector:
         user.sector = first_sector
-
     user.insert(ignore_permissions=True)
-
-    # -------------------------------------------------
-    # 4️⃣ Assign user to sectors + update lead flag
-    # -------------------------------------------------
     for row in sectors:
         sector_name = row.get("sector")
         is_lead = cint(row.get("is_sector_lead"))
-
         if not sector_name:
             continue
-
         sec_doc = frappe.get_doc("Sector", sector_name)
-
         existing_member = next(
             (m for m in sec_doc.members if m.user == user.name),
             None
         )
-
         if existing_member:
             existing_member.is_sector_lead = is_lead
         else:
@@ -417,12 +361,7 @@ def create_sector_user(full_name, email, sectors):
                 "user": user.name,
                 "is_sector_lead": is_lead
             })
-
         sec_doc.save(ignore_permissions=True)
-
-        # -------------------------------------------------
-        # 5️⃣ Ensure User Sector KPI exists
-        # -------------------------------------------------
         if not frappe.db.exists("User Sector KPI", {
             "user": user.name,
             "sector": sector_name
@@ -437,9 +376,7 @@ def create_sector_user(full_name, email, sectors):
                 "delayed_tasks": 0,
                 "avg_completion_time": 0,
             }).insert(ignore_permissions=True)
-
     frappe.db.commit()
-
     return {
         "message": "User created successfully",
         "user": user.name,
@@ -586,7 +523,8 @@ def import_task_templates(csv_file):
                 template_name = (row.get("Template Name") or "").strip()
                 sector_label = (row.get("Sector") or "").strip()
                 duration_days = row.get("Duration Days")
-                task_name = (row.get("L2 Task Name") or "").strip()
+                task_name = (row.get("L2 Indicators") or "").strip()
+                l1_indicator = (row.get("L1 Indicator") or "").strip()
                 description = (row.get("Description") or "").strip()
 
                 if not sector_label or not task_name:
@@ -615,6 +553,7 @@ def import_task_templates(csv_file):
                 if frappe.db.exists("Task Template", {
                     "template_name": template_name,
                     "sector": sector,
+                    "l1_indicator": l1_indicator,
                     "task_name": task_name,
                     "duration_days": int(duration_days or 0)
                 }):
@@ -628,6 +567,7 @@ def import_task_templates(csv_file):
                     "doctype": "Task Template",
                     "template_name": template_name,
                     "sector": sector,
+                    "l1_indicator": l1_indicator,
                     "task_name": task_name,
                     "description": description,
                     "duration_days": int(duration_days or 0)
@@ -651,3 +591,140 @@ def import_task_templates(csv_file):
         "skipped": skipped,
         "errors": errors
     }
+
+
+@frappe.whitelist()
+def recalculate_sector_readiness(sector):
+    if not sector:
+        frappe.throw("Sector is required")
+
+    stats = frappe.db.sql("""
+        SELECT
+            COUNT(*) AS total_tasks,
+            SUM(CASE WHEN status = 'Completed' THEN 1 ELSE 0 END) AS completed_tasks,
+            SUM(CASE WHEN status = 'In Progress' THEN 1 ELSE 0 END) AS in_progress_tasks
+        FROM `tabEvent Task`
+        WHERE sector = %s
+    """, sector, as_dict=True)[0]
+
+    total_tasks = stats.total_tasks or 0
+    completed_tasks = stats.completed_tasks or 0
+    in_progress_tasks = stats.in_progress_tasks or 0
+
+    sector_readiness = (
+        flt((completed_tasks / total_tasks) * 100, 2)
+        if total_tasks > 0 else 0
+    )
+
+    sector_doc = frappe.get_doc("Sector", sector)
+
+    sector_doc.total_tasks = total_tasks
+    sector_doc.completed_tasks = completed_tasks
+    sector_doc.in_progress_tasks = in_progress_tasks
+    sector_doc.sector_readiness = sector_readiness
+
+    sector_doc.save(ignore_permissions=True)
+
+    return {
+        "total_tasks": total_tasks,
+        "completed_tasks": completed_tasks,
+        "in_progress_tasks": in_progress_tasks,
+        "sector_readiness": sector_readiness
+    }
+
+
+@frappe.whitelist()
+def get_sector_detail(sector):
+    if not sector:
+        frappe.throw("Sector is required")
+
+    sector_doc = frappe.get_doc("Sector", sector)
+    members = []
+    user_ids = []
+
+    for row in sector_doc.sector_members:
+        user_ids.append(row.user)
+
+    user_map = {
+        u.name: u
+        for u in frappe.get_all(
+            "User",
+            filters={"name": ["in", user_ids]},
+            fields=["name", "full_name", "email", "phone"]
+        )
+    }
+    task_stats = frappe.db.sql("""
+        SELECT
+            assigned_to,
+            COUNT(*) AS total_tasks,
+            SUM(CASE WHEN status = 'Completed' THEN 1 ELSE 0 END) AS completed_tasks
+        FROM `tabEvent Task`
+        WHERE sector = %s
+        GROUP BY assigned_to
+    """, sector, as_dict=True)
+
+    task_map = {
+        t.assigned_to: t
+        for t in task_stats
+    }
+    for row in sector_doc.sector_members:
+        user = user_map.get(row.user)
+        stats = task_map.get(row.user, {})
+
+        total = stats.total_tasks or 0
+        completed = stats.completed_tasks or 0
+
+        performance = (
+            int(math.floor((completed / total) * 100 + 0.5))
+            if total > 0 else 0
+        )
+
+        members.append({
+            "id": row.user,
+            "name": user.full_name if user else row.user,
+            "email": user.email if user else "",
+            "phone": user.phone if user else "",
+            "avatar": (user.full_name[:2].upper() if user else "NA"),
+            "sectors": [{
+                "sectorId": sector_doc.name,
+                "sectorName": sector_doc.name,
+                "isLead": row.is_lead
+            }],
+            "tasksAssigned": total,
+            "tasksCompleted": completed,
+            "performance": performance
+        })
+    return {
+        "sector": {
+            "id": sector_doc.name,
+            "name": sector_doc.name,
+            "description": sector_doc.description,
+            "readiness": int(math.floor((sector_doc.sector_readiness or 0) + 0.5)),
+            "totalMembers": len(members),
+            "leads": len([m for m in members if m["sectors"][0]["isLead"]]),
+            "activeTasks": sector_doc.in_progress_tasks or 0,
+            "completedTasks": sector_doc.completed_tasks or 0
+        },
+        "members": members
+    }
+
+
+@frappe.whitelist()
+def add_sector_member(sector, user, is_lead=0):
+    if not sector or not user:
+        frappe.throw("Sector and User are required")
+
+    sector_doc = frappe.get_doc("Sector", sector)
+
+    # Prevent duplicates
+    if any(row.user == user for row in sector_doc.sector_members):
+        frappe.throw("User already added to this sector")
+
+    sector_doc.append("sector_members", {
+        "user": user,
+        "is_lead": is_lead
+    })
+
+    sector_doc.save(ignore_permissions=True)
+
+    return {"status": "success"}

@@ -1,5 +1,4 @@
 import frappe
-from frappe import enqueue
 from frappe.utils import add_days, getdate, nowdate
 
 frappe.flags.ignore_csrf = True
@@ -109,12 +108,11 @@ def get_events_for_user(
 
 
 @frappe.whitelist()
-def get_event_details(event_name):
+def get_event_overview(event_name):
     """
     Returns:
       - event detail fields
-      - tasks visible to the current user
-      - breakdown counts
+      - breakdown counts (summary)
       - unique sectors
     """
 
@@ -142,7 +140,7 @@ def get_event_details(event_name):
         user_is_lead = any(e.custom_is_sector_lead for e in kpi_entries)
 
     # -------------------------
-    # 3️⃣ Build task filters
+    # 3️⃣ Build task filters (for summary only)
     # -------------------------
     task_filters = {"event": event_name}
 
@@ -153,7 +151,97 @@ def get_event_details(event_name):
             task_filters["incharge"] = user
 
     # -------------------------
-    # 4️⃣ Fetch tasks for this event
+    # 4️⃣ Fetch ONLY statuses for summary
+    # -------------------------
+    task_statuses = frappe.get_all(
+        "Event Task",
+        filters=task_filters,
+        fields=["status"]
+    )
+
+    # -------------------------
+    # 5️⃣ Build summary counts
+    # -------------------------
+    total = len(task_statuses)
+    pending = sum(1 for t in task_statuses if t.status == "Pending")
+    in_progress = sum(1 for t in task_statuses if t.status == "In Progress")
+    completed = sum(1 for t in task_statuses if t.status == "Completed")
+    delayed = sum(1 for t in task_statuses if t.status == "Delayed")
+
+    # -------------------------
+    # 6️⃣ Unique sectors (light query)
+    # -------------------------
+    sectors = sorted({
+        t.sector for t in frappe.get_all(
+            "Event Task",
+            filters={"event": event_name},
+            fields=["sector"]
+        ) if t.sector
+    })
+
+    # -------------------------
+    # 7️⃣ Response payload
+    # -------------------------
+    return {
+        "event": {
+            "name": event.name,
+            "event_name": event.event_name,
+            "event_date": event.event_date,
+            "custom_event_end_date": event.custom_event_end_date,
+            "event_readiness": event.event_readiness,
+        },
+        "summary": {
+            "total": total,
+            "pending": pending,
+            "in_progress": in_progress,
+            "completed": completed,
+            "delayed": delayed,
+        },
+        "sectors": sectors,
+        "user": user,
+        "user_sector_list": user_sector_list,
+        "user_is_lead": user_is_lead,
+    }
+
+
+@frappe.whitelist()
+def get_event_tasks(event_name):
+    """
+    Returns:
+      - tasks visible to the current user
+    """
+
+    user = frappe.session.user
+
+    # -------------------------
+    # 1️⃣ Load User Sector Permissions
+    # -------------------------
+    user_sector_list = []
+    user_is_lead = False
+
+    kpi_entries = frappe.get_all(
+        "User Sector KPI",
+        filters={"user": user},
+        fields=["sector", "custom_is_sector_lead"]
+    )
+
+    if kpi_entries:
+        user_sector_list = [e.sector for e in kpi_entries]
+        user_is_lead = any(e.custom_is_sector_lead for e in kpi_entries)
+
+    # -------------------------
+    # 2️⃣ Build task filters
+    # -------------------------
+    task_filters = {"event": event_name}
+
+    if user != "Administrator":
+        if user_is_lead and user_sector_list:
+            task_filters["sector"] = ["in", user_sector_list]
+        else:
+            task_filters["incharge"] = user
+
+    # -------------------------
+    # 3️⃣ Fetch tasks
     # -------------------------
     tasks = frappe.get_all(
         "Event Task",
@@ -170,41 +258,8 @@ def get_event_details(event_name):
         order_by="creation asc"
     )
 
-    # -------------------------
-    # 5️⃣ Build summary counts
-    # -------------------------
-    total = len(tasks)
-    pending = sum(1 for t in tasks if t.status == "Pending")
-    in_progress = sum(1 for t in tasks if t.status == "In Progress")
-    completed = sum(1 for t in tasks if t.status == "Completed")
-    delayed = sum(1 for t in tasks if t.status == "Delayed")
-
-    # Unique sectors
-    sectors = sorted({t.sector for t in tasks if t.sector})
-
-    # -------------------------
-    # 6️⃣ Response payload
-    # -------------------------
     return {
-        "event": {
-            "name": event.name,
-            "event_name": event.event_name,
-            "event_date": event.event_date,
-            "custom_event_end_date": event.custom_event_end_date,
-            "event_readiness": event.event_readiness,
-        },
-        "tasks": tasks,
-        "summary": {
-            "total": total,
-            "pending": pending,
-            "in_progress": in_progress,
-            "completed": completed,
-            "delayed": delayed,
-        },
-        "sectors": sectors,
-        "user": user,
-        "user_sector_list": user_sector_list,
-        "user_is_lead": user_is_lead,
+        "tasks": tasks
     }
 
 
@@ -271,3 +326,25 @@ def create_event(
         "message": "Event created successfully",
         "event_name": event.name
     }
+
+
+@frappe.whitelist()
+def get_sector_users_for_event(event_name):
+    sectors = frappe.get_all(
+        "Event Task",
+        filters={"event": event_name},
+        fields=["sector"],
+        distinct=True
+    )
+    sector_list = [s.sector for s in sectors if s.sector]
+    if not sector_list:
+        return {}
+    entries = frappe.get_all(
+        "User Sector KPI",
+        filters={"sector": ["in", sector_list]},
+        fields=["sector", "user"]
+    )
+    sector_users = {}
+    for e in entries:
+        sector_users.setdefault(e.sector, []).append(e.user)
+    return sector_users
