@@ -14,7 +14,7 @@ ALLOWED_SORT_FIELDS = {
 
 def is_event_admin(user=None):
     user = user or frappe.session.user
-    return frappe.has_role("Event Readiness Admin", user)
+    return "Event Readiness Admin" in frappe.get_roles(user)
 
 
 @frappe.whitelist()
