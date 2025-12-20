@@ -12,6 +12,11 @@ ALLOWED_SORT_FIELDS = {
 }
 
 
+def is_event_admin(user=None):
+    user = user or frappe.session.user
+    return frappe.has_role("Event Readiness Admin", user)
+
+
 @frappe.whitelist()
 def get_events_for_user(
         sort_by="event_date",
@@ -144,7 +149,7 @@ def get_event_overview(event_name):
     # -------------------------
     task_filters = {"event": event_name}
 
-    if user != "Administrator":
+    if not is_event_admin(user):
         if user_is_lead and user_sector_list:
             task_filters["sector"] = ["in", user_sector_list]
         else:
@@ -206,16 +211,7 @@ def get_event_overview(event_name):
 
 @frappe.whitelist()
 def get_event_tasks(event_name):
-    """
-    Returns:
-      - tasks visible to the current user
-    """
-
     user = frappe.session.user
-
-    # -------------------------
-    # 1️⃣ Load User Sector Permissions
-    # -------------------------
     user_sector_list = []
     user_is_lead = False
 
@@ -234,7 +230,7 @@ def get_event_tasks(event_name):
     # -------------------------
     task_filters = {"event": event_name}
 
-    if user != "Administrator":
+    if not is_event_admin(user):
         if user_is_lead and user_sector_list:
             task_filters["sector"] = ["in", user_sector_list]
         else:
